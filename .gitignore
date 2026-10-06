@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+models/piper_voices/*.onnx
+models/piper_voices/*.json
+dist/
+build/
+*.spec
+*.part
+.venv/
