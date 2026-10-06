@@ -9,8 +9,8 @@
 - Speaker 2: second conversational host, inquisitive and dynamic tone (British English)
 
 [VOICE_CONFIG]
-Speaker 1: voice=af_heart pan=-25% speed=1.0 pitch=0
-Speaker 2: voice=am_adam pan=+25% speed=1.0 pitch=0
+Speaker 1: voice=af_heart pan=-25% speed=0.98 pitch=0
+Speaker 2: voice=am_adam pan=+25% speed=1.04 pitch=+1
 
 ---
 
