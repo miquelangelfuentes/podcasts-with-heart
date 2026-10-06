@@ -167,21 +167,26 @@ class MainWindow(ctk.CTk):
         self.geometry(f"{target_w}x{target_h}")
 
     def _set_app_icon(self):
-        """Sets application window and taskbar icons."""
+        """Sets application window and taskbar icons reliably across Windows versions."""
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         ico_path = os.path.join(base_dir, "assets", "icon.ico")
         png_path = os.path.join(base_dir, "assets", "icon.png")
-        if os.path.exists(ico_path):
-            try:
-                self.iconbitmap(ico_path)
-            except Exception:
-                pass
-        if os.path.exists(png_path):
-            try:
-                self._icon_img = tk.PhotoImage(file=png_path)
-                self.iconphoto(True, self._icon_img)
-            except Exception:
-                pass
+
+        def _apply():
+            if os.path.exists(ico_path):
+                try:
+                    self.iconbitmap(ico_path)
+                except Exception:
+                    pass
+            if os.path.exists(png_path):
+                try:
+                    self._icon_img = tk.PhotoImage(file=png_path)
+                    self.iconphoto(True, self._icon_img)
+                except Exception:
+                    pass
+
+        _apply()
+        self.after(200, _apply)
 
     def safe_after(self, func):
         self._ui_queue.put(func)

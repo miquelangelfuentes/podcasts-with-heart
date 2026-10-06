@@ -26,8 +26,18 @@ def enable_windows_dpi_awareness():
         except Exception:
             pass
 
+def set_windows_app_id():
+    """Ensure Windows taskbar displays the unique application icon instead of default Python icon."""
+    try:
+        if sys.platform.startswith("win"):
+            myappid = "antigravity.podcastswithheart.v1"
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+    except Exception:
+        pass
+
 def main():
     enable_windows_dpi_awareness()
+    set_windows_app_id()
     from ui.main_window import MainWindow
     app = MainWindow()
     app.mainloop()
