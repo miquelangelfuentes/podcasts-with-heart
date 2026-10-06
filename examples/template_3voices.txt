@@ -1,0 +1,39 @@
+[TITLE: Roundtable Discussions with 3 Voices]
+[DESCRIPTION: An educational panel discussion where the Host, Speaker 1, and Speaker 2 showcase a full 3-voice talk show with centered moderation and side guests.]
+[FORMAT: stereo 160 kbps]
+[DEFAULT_PAUSE: 350ms]
+[INTERLOCUTOR_PAUSE: 650ms]
+
+[VOICES]
+- Host: roundtable moderator, structured and welcoming tone (American English)
+- Speaker 1: technical specialist, analytical and insightful tone (British English)
+- Speaker 2: educational practitioner, pragmatic and warm tone (American English)
+
+[VOICE_CONFIG]
+Host: voice=davis pan=0% speed=0.98 pitch=-1
+Speaker 1: voice=sonia pan=-25% speed=1.0 pitch=0
+Speaker 2: voice=guy pan=+25% speed=1.02 pitch=0
+
+---
+
+Host: Welcome to this roundtable demonstration! Today, we are showcasing the three-voice format in Podcasts with Heart. Joining me today are Speaker 1 and Speaker 2. Speaker 1, how is this format structured?
+
+[PAUSE: 500ms]
+
+Speaker 1: Thank you! The three-voice setup is the most versatile studio configuration: the Host is centered at zero percent stereo panning to guide and moderate the conversation, while Speaker 1 is panned to the left at minus twenty-five percent and Speaker 2 to the right at plus twenty-five percent.
+
+Speaker 2: This creates an immersive sound stage that mirrors a genuine broadcast studio or professional panel show.
+
+[PAUSE: 550ms]
+
+Host: And in terms of script authoring, Speaker 2, what features make this easy for teachers and students?
+
+Speaker 1: The app provides a clean script mode where you only need to write who speaks and what they say. The parser automatically detects characters, displays interactive configuration cards, and lets you fine-tune voices and panning visually.
+
+[PAUSE: 500ms]
+
+Speaker 2: Furthermore, with the dedicated School Mode switch in the header, all text and audio can be processed completely offline on your device, ensuring total privacy under student data protection guidelines.
+
+[PAUSE: 500ms]
+
+Host: Once synthesis finishes, the audio engine stitches tracks seamlessly, blends your looping background ambience, normalizes loudness to minus sixteen LUFS according to the EBU R128 standard, and produces a professional MP3 file ready to share with your class. Thank you for joining us, and enjoy crafting your podcasts with heart!

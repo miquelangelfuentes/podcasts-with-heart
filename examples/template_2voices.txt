@@ -1,0 +1,37 @@
+[TITLE: How 2-Voice Dialogue Podcasts Work]
+[DESCRIPTION: An interactive educational dialogue where Speaker 1 and Speaker 2 explain how dual-host conversations work without a moderator.]
+[FORMAT: stereo 160 kbps]
+[DEFAULT_PAUSE: 350ms]
+[INTERLOCUTOR_PAUSE: 600ms]
+
+[VOICES]
+- Speaker 1: first conversational host, explanatory and friendly tone (US English)
+- Speaker 2: second conversational host, inquisitive and dynamic tone (British English)
+
+[VOICE_CONFIG]
+Speaker 1: voice=jenny pan=-25% speed=1.0 pitch=0
+Speaker 2: voice=ryan pan=+25% speed=1.0 pitch=0
+
+---
+
+Speaker 1: Hello everyone! If you are listening to this sample, you are experiencing the two-voice dialogue format in Podcasts with Heart.
+
+Speaker 2: That's right! This setup is designed for peer interviews, co-taught lessons, or collaborative discussions between educators and students. Notice an essential feature: we don't need an extra host in the middle!
+
+[PAUSE: 450ms]
+
+Speaker 1: Exactly. The conversation flows naturally between Speaker 1 and Speaker 2. Thanks to automatic stereo spatialization, Speaker 1 speaks slightly from the left at minus twenty-five percent, while Speaker 2 speaks from the right at plus twenty-five percent.
+
+Speaker 2: This stereo separation creates an authentic studio table experience, allowing listeners to immediately recognize who is speaking without any effort.
+
+[PAUSE: 500ms]
+
+Speaker 1: And how are conversational turns handled? The application analyzes speaker switches and inserts natural breathing pauses, set by default to around six hundred milliseconds. This keeps speech organic and human.
+
+Speaker 2: You can switch voices anytime using the dropdown menu, test instant samples with the Preview button, or activate School Mode to keep all audio processing one hundred percent offline.
+
+[PAUSE: 450ms]
+
+Speaker 1: In addition, you can attach an ambient soundtrack with calibrated loop volume. When finished, hit "Generate Full Podcast" (Control plus G), and your episode will be mastered to minus sixteen LUFS and exported as a crisp MP3 file.
+
+Speaker 2: An intuitive, powerful, and accessible tool to bring classroom storytelling to life!

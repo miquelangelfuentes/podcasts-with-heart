@@ -1,0 +1,30 @@
+[TITLE: How 1-Voice Podcasts Work in Podcasts with Heart]
+[DESCRIPTION: An explanatory monologue demonstrating single-voice podcast format for lessons, instructional capsules, and editorials.]
+[FORMAT: stereo 160 kbps]
+[DEFAULT_PAUSE: 350ms]
+
+[VOICES]
+- Host: main presenter, warm and articulate instructional tone (American English)
+
+[VOICE_CONFIG]
+Host: voice=jenny pan=0% speed=1.0 pitch=0
+
+---
+
+Host: Welcome to this quick guide! Today, we are exploring how Podcasts with Heart works in single-voice format.
+
+[PAUSE: 500ms]
+
+Host: The single-voice format is ideal for educational capsules, lesson summaries, activity instructions, or audio essays. The Host is automatically centered in the stereo soundscape at zero percent, ensuring clear, balanced, and direct vocal presence.
+
+[PAUSE: 450ms]
+
+Host: To write your script, simply enter your dialogue lines starting with the name "Host" followed by a colon. You can add expressive pauses anytime using simple bracket tags, like a pause of five hundred milliseconds.
+
+[PAUSE: 500ms]
+
+Host: From the control studio, you can choose between high-fidelity online neural voices like Jenny, Guy, or Sonia, or completely autonomous offline Piper models that run 100 percent locally. You can also adjust reading speed and customize stereo positioning.
+
+[PAUSE: 400ms]
+
+Host: When your script is ready, you can add an optional background music track or ambient sound at fifteen percent volume and press "Generate Full Podcast" or use the shortcut Control plus G. The app masteries the audio to international EBU R128 standards at minus sixteen LUFS and exports your broadcast-ready MP3 file. It is that simple!
