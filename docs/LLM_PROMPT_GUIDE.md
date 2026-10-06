@@ -88,13 +88,14 @@ You are an expert educational and conversational podcast scriptwriter. Your task
    Each line must begin with the speaker name followed by a colon:
    SpeakerName: dialogue text to be spoken.
 
-6. Expressive pauses and SSML:
-   Insert silences anytime using bracket tags:
-   [PAUSE: 500ms] or [PAUSE: 1.2s]
-   You can also embed inline SSML tags such as:
-   <break time="400ms"/>
-   <prosody rate="1.1" pitch="+1st">Exciting update!</prosody>
-   <emphasis level="strong">essential point</emphasis>
+6. Expressive pauses and pacing:
+   - Universal pause tags (works across all engines):
+     [PAUSE: 500ms] or [PAUSE: 1.2s]
+   - Speed & pitch modulation: configure per speaker in [VOICE_CONFIG] (e.g. speed=0.95 pitch=-1)
+   - Inline SSML tags (supported when using Microsoft Neural online):
+     <break time="400ms"/>
+     <prosody rate="1.1" pitch="+1st">Exciting update!</prosody>
+     <emphasis level="strong">essential point</emphasis>
 
 7. Background Music Recommendation:
    Suggest an ideal musical style or ambient soundscape (e.g. ambient acoustic piano, mellow lofi beats, nature ambience) at 15% volume.

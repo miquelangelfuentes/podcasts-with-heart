@@ -51,46 +51,12 @@ All neural models in Podcasts with Heart derive natural prosodic cues from stand
 
 ---
 
-## 3. Inline SSML Tags within Dialogue Lines
+## 3. Pacing, Pauses & SSML Tags
 
-You can embed SSML tags directly inside any line of dialogue:
+Podcasts with Heart provides two complementary approaches to control pacing: **dedicated bracket tags** (supported across all engines including 100% offline Kokoro-82M and Piper) and **inline SSML tags** (supported natively by the online Microsoft Neural engine):
 
-### A. Pauses & Silences (`<break>`)
-Dictates exact silence duration between phrases:
-```xml
-Host: Let us start with the primary concept. <break time="400ms"/> Next, we will evaluate the results.
-Speaker 1: Let me reflect on that for a second... <break time="1s"/> Now that is crystal clear!
-```
-- **Attribute `time`**: Accepts milliseconds (`300ms`, `600ms`) or seconds (`1s`, `1.5s`).
-- **Recommended Guidelines**:
-  - `150ms – 250ms`: Brief breath pause within a complex sentence.
-  - `400ms – 650ms`: Natural topic shift or thought transition.
-  - `800ms – 1.5s`: Dramatic silence for listeners to absorb a key insight.
-
----
-
-### B. Speed & Pitch Modulation (`<prosody>`)
-Alters speed (`rate`) and musical pitch (`pitch`) for a specific phrase:
-```xml
-Host: <prosody rate="0.9">This definition is essential for the entire curriculum.</prosody>
-Speaker 1: <prosody rate="1.15" pitch="+1st">Brilliant! We solved the riddle in record time!</prosody>
-```
-- **`rate`**: Relative multiplier (`0.85`, `1.15`, `"slow"`, `"fast"`).
-- **`pitch`**: Relative semitones (`"+1st"`, `"+2st"`, `"-1st"`, `"-2st"`).
-
----
-
-### C. Pedagogical Emphasis (`<emphasis>`)
-Increases acoustic prominence, volume, and micro-duration of target words:
-```xml
-Host: This is not just a coincidence; this is a <emphasis level="strong">structural paradigm shift</emphasis>.
-```
-- **Levels**: `strong`, `moderate`, `reduced`.
-
----
-
-### D. Direct Pauses as Dedicated Script Lines (`[PAUSE: ...]`)
-Instead of embedding inline XML, you can insert dedicated pause lines between speaker turns:
+### A. Dedicated Pause Lines (`[PAUSE: ...]`) — Recommended (Universal)
+Supported uniformly by all offline and online engines. Insert dedicated pause lines anywhere in the dialogue:
 ```text
 Host: That wraps up our first case study.
 
@@ -98,6 +64,43 @@ Host: That wraps up our first case study.
 
 Speaker 1: Moving right along to the second example...
 ```
+- **Format**: `[PAUSE: 350ms]` or `[PAUSE: 1.2s]`.
+- **Recommended Guidelines**:
+  - `150ms – 250ms`: Brief breath pause within a complex sequence.
+  - `400ms – 650ms`: Natural topic shift or thought transition between speakers.
+  - `800ms – 1.5s`: Dramatic silence for listeners to absorb a key takeaway.
+
+---
+
+### B. Speaker-Level Speed & Pitch (`[VOICE_CONFIG]` & UI) — Universal
+The primary and most reliable way to modulate speed and pitch across **all engines** (Kokoro-82M, Piper, and Microsoft Neural):
+- **Via the UI**: Select speed directly on each speaker card (`0.8x`, `0.9x`, `1.0x`, `1.1x`, `1.2x`).
+- **Via the Script Header**:
+  ```ini
+  [VOICE_CONFIG]
+  Host: voice=af_heart pan=0% speed=0.95 pitch=0
+  Speaker 1: voice=bf_emma pan=-25% speed=1.05 pitch=+1
+  ```
+
+---
+
+### C. Inline SSML Tags (Cloud Neural Engine)
+When using the online **Microsoft Neural English** engine, standard SSML tags can be embedded directly within sentences:
+- **Exact silences (`<break time="..."/>`)**:
+  ```xml
+  Speaker 1: Let me reflect on that for a second... <break time="800ms"/> Now that makes complete sense!
+  ```
+- **Speed & pitch shifts (`<prosody rate="..." pitch="...">`)**:
+  ```xml
+  Host: <prosody rate="0.9">This definition is essential for the entire curriculum.</prosody>
+  Speaker 1: <prosody rate="1.15" pitch="+1st">Brilliant! We solved the puzzle in record time!</prosody>
+  ```
+- **Emphasis (`<emphasis level="strong">`)**:
+  ```xml
+  Host: This is not just an update; this is a <emphasis level="strong">structural paradigm shift</emphasis>.
+  ```
+> [!NOTE]
+> Offline neural engines (Kokoro-82M and Piper) synthesize speech from normalized phonetic text. For offline synthesis, always use `[VOICE_CONFIG] speed=... pitch=...` and `[PAUSE: ...ms]` tags for 100% predictable, natural pacing.
 
 ---
 

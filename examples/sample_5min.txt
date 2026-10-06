@@ -42,11 +42,11 @@ Speaker 2: And with the dedicated School Mode button in the header bar, you can 
 
 [PAUSE: 600ms]
 
-Speaker 1: Now, you might wonder: what engine powers this remarkable naturalness? Podcasts with Heart features Kokoro-82M, our flagship local neural engine, alongside Piper Neural English. Kokoro uses state-of-the-art StyleTTS2 architecture with an internal neural vocoder, producing studio-grade twenty-four kilohertz speech with exceptional cadence, prosody, and emotional clarity across eleven American and British studio voices. You can even use SSML tags like <prosody rate="0.9">to speak more slowly and deliberately,</prosody> or <prosody rate="1.15" pitch="+1st">to deliver exciting news with enthusiasm!</prosody>
+Speaker 1: Now, you might wonder: what engine powers this remarkable naturalness? Podcasts with Heart features Kokoro-82M, our flagship local neural engine, alongside Piper Neural English. Kokoro uses state-of-the-art StyleTTS2 architecture with an internal neural vocoder, producing studio-grade twenty-four kilohertz speech with exceptional cadence, prosody, and emotional clarity across eleven American and British studio voices. You can customize speaking speed from zero point eight to one point two and adjust pitch for each speaker directly in the Voice Cast panel or the voice configuration header!
 
 [PAUSE: 500ms]
 
-Speaker 2: In addition, background music or ambient sound can be seamlessly looped under the voices, with real-time volume ducking and live preview controls. When generation completes, the built-in mastering chain normalizes the audio to minus sixteen LUFS according to the international EBU R128 broadcasting standard, and exports a pristine MP3 file ready to upload to Google Classroom, Canvas, or Moodle!
+Speaker 2: In addition, background music or ambient sound can be seamlessly looped under the voices, with automated cross-fading, calibrated volume controls, and instant live preview. When generation completes, the built-in mastering chain normalizes the audio to minus sixteen LUFS according to the international EBU R128 broadcasting standard, and exports a pristine MP3 file ready to upload to Google Classroom, Canvas, or Moodle!
 
 [PAUSE: 600ms]
 
