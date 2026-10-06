@@ -397,7 +397,7 @@ class MainWindow(ctk.CTk):
 
         lbl_author = ctk.CTkLabel(
             footer_box,
-            text="Created through intentional coding with Google Antigravity by Miquel Àngel Fuentes · ",
+            text="Created through vibe coding with Google Antigravity by Miquel Àngel Fuentes · ",
             font=HeartTheme.FONT_SMALL,
             text_color=HeartTheme.TEXT_MUTED
         )
