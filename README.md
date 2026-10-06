@@ -15,7 +15,8 @@
   - Toggle **🏫 School Mode** with a single click in the header.
   - Automatically restricts synthesis to local **Piper ONNX** models and hides cloud engines.
   - Guarantees **0% internet data transmission** (fully compliant with student data privacy & GDPR).
-- **Dual Voice Engines**:
+- **Triple Voice Engines (Offline & Cloud)**:
+  - **💖 Kokoro-82M Heart Engine (100% Offline, Studio Quality)**: Flagship 82M parameter neural TTS engine with 11 expressive voices (Heart, Bella, Nicole, Sarah, Sky, Adam, Michael, Emma, Isabella, George, Lewis). Zero internet required.
   - **🎙️ Piper Neural English (100% Offline)**: Lightweight (~63 MB/voice) ONNX models for US and British English (Lessac, Amy, Ryan, Alan).
   - **☁️ Microsoft Neural English (Online)**: Studio-grade cloud voices with US, UK, and Australian accents (Jenny, Guy, Aria, Davis, Sonia, Ryan, Natasha).
 - **Background Music & Ambience Track**:
@@ -54,6 +55,7 @@ python app.py
 ├── 📁 core/                      # Processing engines
 │   ├── 📄 script_parser.py       # Podcast script parser
 │   ├── 📄 text_normalizer.py     # English text & SSML normalizer
+│   ├── 📄 kokoro_engine.py       # Kokoro-82M Heart engine (100% Offline)
 │   ├── 📄 edge_tts_engine.py     # Microsoft Neural English engine (Online)
 │   ├── 📄 piper_engine.py        # Piper ONNX English engine (100% Offline)
 │   ├── 📄 audio_processor.py     # Stereo panning, loop music, EBU R128 & MP3
