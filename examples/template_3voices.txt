@@ -28,7 +28,7 @@ Speaker 2: This creates an immersive sound stage that mirrors a genuine broadcas
 
 Host: And in terms of script authoring, Speaker 2, what features make this easy for teachers and students?
 
-Speaker 1: The app provides a clean script mode where you only need to write who speaks and what they say. The parser automatically detects characters, displays interactive configuration cards, and lets you fine-tune voices and panning visually.
+Speaker 1: The app provides a clean script mode where you only need to write who speaks and what they say. The parser automatically detects characters, displays interactive configuration cards, and lets you fine-tune voices, reading speed, and stereo panning visually.
 
 [PAUSE: 500ms]
 

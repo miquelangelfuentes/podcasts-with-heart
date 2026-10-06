@@ -27,4 +27,4 @@ Host: From the control studio, you can choose between high-fidelity online neura
 
 [PAUSE: 400ms]
 
-Host: When your script is ready, you can add an optional background music track or ambient sound at fifteen percent volume and press "Generate Full Podcast" or use the shortcut Control plus G. The app masteries the audio to international EBU R128 standards at minus sixteen LUFS and exports your broadcast-ready MP3 file. It is that simple!
+Host: When your script is ready, you can add an optional background music track or ambient sound at fifteen percent volume and press "Generate Full Podcast" or use the shortcut Control plus G. The app masters the audio to international EBU R128 standards at minus sixteen LUFS and exports your broadcast-ready MP3 file. It is that simple!

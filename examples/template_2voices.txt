@@ -28,7 +28,7 @@ Speaker 2: This stereo separation creates an authentic studio table experience, 
 
 Speaker 1: And how are conversational turns handled? The application analyzes speaker switches and inserts natural breathing pauses, set by default to around six hundred milliseconds. This keeps speech organic and human.
 
-Speaker 2: You can switch voices anytime using the dropdown menu, test instant samples with the Preview button, or activate School Mode to keep all audio processing one hundred percent offline.
+Speaker 2: You can switch voices anytime using the dropdown menu, adjust reading speed or pitch in the configuration header, test instant samples with the Preview button, or activate School Mode to keep all audio processing one hundred percent offline.
 
 [PAUSE: 450ms]
 

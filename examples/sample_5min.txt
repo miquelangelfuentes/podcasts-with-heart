@@ -10,9 +10,9 @@
 - Speaker 2: secondary educator and collaborative teacher trainer (British English)
 
 [VOICE_CONFIG]
-Host: voice=af_heart pan=0% speed=1.0 pitch=0
+Host: voice=af_heart pan=0% speed=0.96 pitch=-1
 Speaker 1: voice=af_bella pan=-25% speed=1.0 pitch=0
-Speaker 2: voice=bm_george pan=+25% speed=1.0 pitch=0
+Speaker 2: voice=bm_george pan=+25% speed=1.04 pitch=+1
 
 ---
 
@@ -30,7 +30,7 @@ Speaker 1: Exactly! And that is precisely why Podcasts with Heart was designed. 
 
 [PAUSE: 500ms]
 
-Speaker 2: The acoustic control is equally intuitive. In the Voice Cast panel, you can assign distinct voices to each character, audition instant vocal previews with the Test button, and position each voice across the stereo stage. Notice that in your headphones right now, Speaker 1 is placed slightly to the left at minus twenty-five percent, and I am speaking from the right at plus twenty-five percent, faithfully recreating a physical radio studio!
+Speaker 2: The acoustic control is equally intuitive. In the Voice Cast panel, you can assign distinct voices to each character, audition instant vocal previews with the Test button, position each voice across the stereo stage, and fine-tune voice speed and pitch for each speaker. Notice that in your headphones right now, Speaker 1 is placed slightly to the left at minus twenty-five percent, and I am speaking from the right at plus twenty-five percent, faithfully recreating a physical radio studio!
 
 [PAUSE: 600ms]
 
@@ -42,7 +42,7 @@ Speaker 2: And with the dedicated School Mode button in the header bar, you can 
 
 [PAUSE: 600ms]
 
-Speaker 1: Now, you might wonder: what engine powers this remarkable naturalness? Podcasts with Heart features Kokoro-82M, our flagship local neural engine, alongside Piper Neural English. Kokoro uses state-of-the-art StyleTTS2 architecture with an internal neural vocoder, producing studio-grade twenty-four kilohertz speech with exceptional cadence, prosody, and emotional clarity across eleven American and British studio voices.
+Speaker 1: Now, you might wonder: what engine powers this remarkable naturalness? Podcasts with Heart features Kokoro-82M, our flagship local neural engine, alongside Piper Neural English. Kokoro uses state-of-the-art StyleTTS2 architecture with an internal neural vocoder, producing studio-grade twenty-four kilohertz speech with exceptional cadence, prosody, and emotional clarity across eleven American and British studio voices. You can even use SSML tags like <prosody rate="0.9">to speak more slowly and deliberately,</prosody> or <prosody rate="1.15" pitch="+1st">to deliver exciting news with enthusiasm!</prosody>
 
 [PAUSE: 500ms]
 
