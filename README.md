@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Podcasts with Heart" width="100%">
+</p>
+
 # ❤️ Podcasts with Heart
 
 > **Autonomous desktop podcast studio for Windows and Linux to craft 1, 2, or 3-voice educational podcasts in English, with 100% offline privacy and no duration limits.**  
@@ -121,7 +125,10 @@ On Windows, you can also double-click `run_app.bat`.
 │   ├── 📄 player_widget.py       # Audio waveform player & MP3 exporter
 │   ├── 📄 components_modal.py    # Voice models manager, diagnostic & offline guide
 │   └── 📄 version_check_modal.py # GitHub version checker & auto-updater
-├── 📁 assets/                    # Icons and audio assets
+├── 📁 assets/                    # Icons, audio assets, and official banner
+│   ├── 📄 banner.png             # Official repository header banner
+│   ├── 📄 icon.ico / icon.png    # Application logo (Windows & Linux)
+│   └── 📁 previews/              # Offline voice sample audio files
 ├── 📁 examples/                  # 1-voice, 2-voice, and 3-voice script templates
 │   ├── 📄 sample_5min.txt        # Full 5-minute educational podcast sample
 │   ├── 📄 template_1voice.txt    # 1-voice monologue template
