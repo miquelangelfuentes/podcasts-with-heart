@@ -87,7 +87,8 @@ class VoicePreviewManager:
             self._is_playing = True
 
             clean_id = voice_id.lower().strip()
-            wav_path = os.path.join(self.cache_dir, f"preview_{clean_id}.wav")
+            engine_tag = "piper" if "piper" in getattr(engine, "name", "").lower() else "edge"
+            wav_path = os.path.join(self.cache_dir, f"preview_{engine_tag}_{clean_id}.wav")
 
             # Check if pre-cached
             if not os.path.exists(wav_path) or os.path.getsize(wav_path) == 0:

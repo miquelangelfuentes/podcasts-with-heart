@@ -497,12 +497,24 @@ class MainWindow(ctk.CTk):
         voice_ids = [s["id"] for s in available_speakers]
         voice_display = [f"{s['name']}" for s in available_speakers]
 
-        for spk_name, spk_cfg in speakers.items():
+        for spk_idx, (spk_name, spk_cfg) in enumerate(speakers.items()):
             row = ctk.CTkFrame(self.speakers_container, fg_color="transparent")
             row.pack(fill="x", padx=10, pady=5)
 
             name_lbl = ctk.CTkLabel(row, text=f"👤 {spk_name}:", font=HeartTheme.FONT_SMALL_BOLD, text_color=HeartTheme.TEXT_MAIN, width=80, anchor="w")
             name_lbl.pack(side="left")
+
+            # Check if current spk_cfg.voice_id belongs to the active engine
+            match_idx = -1
+            for idx, vid in enumerate(voice_ids):
+                if vid.lower() == spk_cfg.voice_id.lower() or vid.lower() in spk_cfg.voice_id.lower():
+                    match_idx = idx
+                    break
+
+            if match_idx == -1 and voice_ids:
+                # Engine switched: reassign to a valid voice for this speaker
+                match_idx = spk_idx % len(voice_ids)
+                spk_cfg.voice_id = voice_ids[match_idx]
 
             combo = ctk.CTkComboBox(
                 row,
@@ -512,42 +524,55 @@ class MainWindow(ctk.CTk):
                 dropdown_font=HeartTheme.FONT_TINY,
                 command=lambda val, name=spk_name: self._on_speaker_voice_change(name, val)
             )
-            # Find closest match
-            cur_idx = 0
-            for idx, vid in enumerate(voice_ids):
-                if vid.lower() in spk_cfg.voice_id.lower():
-                    cur_idx = idx
-                    break
-            if voice_display:
-                combo.set(voice_display[cur_idx])
+            if voice_display and match_idx >= 0 and match_idx < len(voice_display):
+                combo.set(voice_display[match_idx])
             combo.pack(side="left", fill="x", expand=True, padx=(4, 6))
 
-            # Preview button
+            # Preview button: reads LIVE speaker voice dynamically
             btn_prev = CleanButton(
                 row,
                 style="subtle",
                 text="▶",
                 width=28,
-                height=26,
-                command=lambda vid=spk_cfg.voice_id: self._preview_voice(vid)
+                height=26
             )
+            btn_prev.configure(command=lambda name=spk_name, btn=btn_prev: self._play_speaker_sample(name, btn))
             btn_prev.pack(side="right")
 
     def _on_speaker_voice_change(self, spk_name: str, choice: str):
         available = self.tts_engine.get_speakers()
         for s in available:
-            if s["name"] == choice:
+            if s["name"] == choice or s["id"] == choice:
                 if spk_name in self.current_script.speakers:
                     self.current_script.speakers[spk_name].voice_id = s["id"]
                 break
 
-    def _preview_voice(self, voice_id: str):
+    def _play_speaker_sample(self, spk_name: str, btn: CleanButton):
+        if spk_name not in self.current_script.speakers:
+            return
+        spk_cfg = self.current_script.speakers[spk_name]
+        voice_id = spk_cfg.voice_id
+
+        btn.configure(text="⏳", state="disabled")
+        self._set_status(f"Generating preview for {spk_name} ({voice_id})...")
+
+        def on_start():
+            self.safe_after(lambda: btn.configure(text="🔊"))
+
+        def on_finish():
+            self.safe_after(lambda: btn.configure(text="▶", state="normal"))
+            self._set_status("Ready.")
+
+        def on_error(err):
+            self.safe_after(lambda: btn.configure(text="▶", state="normal"))
+            self._set_status(f"Preview notice: {err}")
+
         self.voice_preview_manager.play_sample(
             voice_id,
             self.tts_engine,
-            on_start_callback=lambda: self._set_status(f"Playing sample for {voice_id}..."),
-            on_finish_callback=lambda: self._set_status("Ready."),
-            on_error_callback=lambda err: self._set_status(f"Preview error: {err}")
+            on_start_callback=on_start,
+            on_finish_callback=on_finish,
+            on_error_callback=on_error
         )
 
     def _set_status(self, text: str):
@@ -717,13 +742,19 @@ class MainWindow(ctk.CTk):
                     stereo_silence = self.audio_processor.apply_pan(silence, 0.0)
                     audio_blocks.append(stereo_silence)
                 elif seg.segment_type == "dialogue":
+                    spk_cfg = self.current_script.speakers.get(seg.speaker)
+                    curr_voice = spk_cfg.voice_id if spk_cfg else seg.voice_id
+                    curr_pan = spk_cfg.pan if spk_cfg else seg.pan
+                    curr_speed = spk_cfg.speed if spk_cfg else seg.speed
+                    curr_pitch = spk_cfg.pitch if spk_cfg else seg.pitch
+
                     raw_audio = self.tts_engine.synthesize_utterance(
                         seg.text,
-                        voice_id=seg.voice_id,
-                        speed=seg.speed,
-                        pitch=seg.pitch
+                        voice_id=curr_voice,
+                        speed=curr_speed,
+                        pitch=curr_pitch
                     )
-                    stereo_seg = self.audio_processor.apply_pan(raw_audio, seg.pan)
+                    stereo_seg = self.audio_processor.apply_pan(raw_audio, curr_pan)
                     audio_blocks.append(stereo_seg)
 
             if not self.cancel_requested and audio_blocks:
