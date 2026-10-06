@@ -1,7 +1,6 @@
 # ❤️ Podcasts with Heart
 
 > **Autonomous desktop podcast studio for Windows and Linux to craft 1, 2, or 3-voice educational podcasts in English, with 100% offline privacy and no duration limits.**  
-> Styled in a modern, warm pastel red & rose studio aesthetic (*HeartTheme*).
 
 ---
 
