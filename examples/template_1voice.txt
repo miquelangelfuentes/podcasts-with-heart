@@ -7,7 +7,7 @@
 - Host: main presenter, warm and articulate instructional tone (American English)
 
 [VOICE_CONFIG]
-Host: voice=jenny pan=0% speed=1.0 pitch=0
+Host: voice=af_heart pan=0% speed=1.0 pitch=0
 
 ---
 

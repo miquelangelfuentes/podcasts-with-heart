@@ -138,3 +138,48 @@ class CleanButton(ctk.CTkButton):
             kwargs["border_color"] = border_color
 
         super().__init__(master, **kwargs)
+
+    def configure(self, **kwargs):
+        if "style" in kwargs:
+            style = kwargs.pop("style")
+            if style == "primary":
+                kwargs.update({
+                    "fg_color": HeartTheme.PRIMARY,
+                    "hover_color": HeartTheme.PRIMARY_HOVER,
+                    "text_color": "#FFFFFF",
+                    "border_width": 0,
+                })
+            elif style == "accent":
+                kwargs.update({
+                    "fg_color": HeartTheme.ACCENT_CORAL,
+                    "hover_color": HeartTheme.ACCENT_CORAL_HOVER,
+                    "text_color": "#FFFFFF",
+                    "border_width": 0,
+                })
+            elif style == "danger":
+                kwargs.update({
+                    "fg_color": HeartTheme.ACCENT_DANGER,
+                    "hover_color": "#B82729",
+                    "text_color": "#FFFFFF",
+                    "border_width": 0,
+                })
+            elif style == "ghost":
+                kwargs.update({
+                    "fg_color": "#FFFFFF",
+                    "hover_color": HeartTheme.BG_CARD_HOVER,
+                    "text_color": HeartTheme.TEXT_MAIN,
+                    "border_width": 1,
+                    "border_color": HeartTheme.BORDER_CARD,
+                })
+            else:  # "subtle"
+                kwargs.update({
+                    "fg_color": HeartTheme.PRIMARY_LIGHT,
+                    "hover_color": "#F8DEE2",
+                    "text_color": HeartTheme.TEXT_MAIN,
+                    "border_width": 1,
+                    "border_color": HeartTheme.ENTRY_BORDER,
+                })
+        return super().configure(**kwargs)
+
+    def config(self, **kwargs):
+        return self.configure(**kwargs)

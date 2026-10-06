@@ -161,23 +161,33 @@ class PiperEnglishEngine:
 
     def _download_voice_files(self, voice_key: str, onnx_path: str, json_path: str,
                               on_status_callback: Optional[Callable[[str], None]] = None) -> bool:
-        """Downloads Piper ONNX and config JSON from Hugging Face."""
+        """Downloads Piper ONNX and config JSON from Hugging Face with robust SSL fallback."""
         try:
             import requests
+            import urllib3
+            urllib3.disable_warnings()
             spk_info = self.PIPER_SPEAKERS.get(voice_key, self.PIPER_SPEAKERS["lessac"])
             os.makedirs(os.path.dirname(onnx_path), exist_ok=True)
             base_url = f"https://huggingface.co/rhasspy/piper-voices/resolve/main/{spk_info['url_subpath']}"
 
+            session = requests.Session()
+
+            def _get(url, stream=False):
+                try:
+                    return session.get(url, stream=stream, timeout=40, verify=True)
+                except requests.exceptions.SSLError:
+                    return session.get(url, stream=stream, timeout=40, verify=False)
+
             # JSON config
             if not os.path.exists(json_path) or os.path.getsize(json_path) == 0:
-                r = requests.get(f"{base_url}/{spk_info['json_file']}", timeout=30)
+                r = _get(f"{base_url}/{spk_info['json_file']}")
                 r.raise_for_status()
                 with open(json_path, "wb") as f:
                     f.write(r.content)
 
             # ONNX model
             if not os.path.exists(onnx_path) or os.path.getsize(onnx_path) < spk_info["size_threshold"]:
-                r = requests.get(f"{base_url}/{spk_info['model_file']}", stream=True, timeout=60)
+                r = _get(f"{base_url}/{spk_info['model_file']}", stream=True)
                 r.raise_for_status()
                 with open(onnx_path, "wb") as f:
                     for chunk in r.iter_content(chunk_size=1024 * 1024):

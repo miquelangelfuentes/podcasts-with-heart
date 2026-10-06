@@ -3,6 +3,7 @@ __pycache__/
 *.pyo
 models/piper_voices/*.onnx
 models/piper_voices/*.json
+models/kokoro_voices/*
 dist/
 build/
 *.spec

@@ -16,6 +16,19 @@ class ModelDownloader:
     HF_BASE_URL = "https://huggingface.co"
 
     MODEL_REPOSITORIES = {
+        "kokoro_heart": {
+            "name": "Kokoro-82M Heart (Studio Quality, 100% Offline)",
+            "provider": "Hexgrad Kokoro",
+            "repo_id": "thewh1teagle/kokoro-onnx",
+            "files": {
+                "kokoro-v1.0.int8.onnx": "kokoro-v1.0.int8.onnx",
+                "voices-v1.0.bin": "voices-v1.0.bin"
+            },
+            "desc": "Studio-quality 82M neural TTS engine with 11 expressive voices including the flagship 'Heart' voice (115 MB). Completely autonomous, zero internet required.",
+            "expected_size_mb": 115.0,
+            "category": "Offline Heart Engine (Kokoro ONNX)",
+            "is_cloud": False
+        },
         "piper_lessac": {
             "name": "Lessac (US English Female, 100% Offline)",
             "provider": "Rhasspy Piper",
@@ -96,7 +109,8 @@ class ModelDownloader:
 
     def get_model_path(self, model_key: str, filename: str) -> str:
         """Returns local path for a model file."""
-        return os.path.join(self.cache_dir, "piper_voices", filename)
+        sub = "kokoro_voices" if "kokoro" in model_key.lower() else "piper_voices"
+        return os.path.join(self.cache_dir, sub, filename)
 
     def is_model_downloaded(self, model_key: str) -> bool:
         """Checks if all files for a model exist and have positive size."""
@@ -169,7 +183,7 @@ class ModelDownloader:
         repo_id = model_info["repo_id"]
         files = model_info["files"]
 
-        sub_dir = os.path.join(self.cache_dir, "piper_voices")
+        sub_dir = os.path.join(self.cache_dir, "kokoro_voices" if "kokoro" in model_key.lower() else "piper_voices")
         os.makedirs(sub_dir, exist_ok=True)
 
         for remote_subpath, local_filename in files.items():
@@ -177,7 +191,13 @@ class ModelDownloader:
                 self.last_error = "Download cancelled by user."
                 return False
 
-            url = f"{self.HF_BASE_URL}/{repo_id}/resolve/main/{remote_subpath}"
+            if "thewh1teagle" in repo_id:
+                url = f"https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/{remote_subpath}"
+            elif remote_subpath.startswith("http://") or remote_subpath.startswith("https://"):
+                url = remote_subpath
+            else:
+                url = f"{self.HF_BASE_URL}/{repo_id}/resolve/main/{remote_subpath}"
+
             dest_path = os.path.join(sub_dir, local_filename)
             temp_path = dest_path + ".part"
 
@@ -196,6 +216,9 @@ class ModelDownloader:
         speed_callback: Optional[Callable[[float], None]]
     ) -> bool:
         try:
+            import urllib3
+            urllib3.disable_warnings()
+            session = requests.Session()
             headers = {"User-Agent": "PodcastsWithHeart/1.0"}
             resume_byte_pos = 0
 
@@ -203,12 +226,18 @@ class ModelDownloader:
                 resume_byte_pos = os.path.getsize(temp_path)
                 headers["Range"] = f"bytes={resume_byte_pos}-"
 
-            response = requests.get(url, headers=headers, stream=True, timeout=25)
+            def _fetch(h):
+                try:
+                    return session.get(url, headers=h, stream=True, timeout=30, verify=True)
+                except requests.exceptions.SSLError:
+                    return session.get(url, headers=h, stream=stream if 'stream' in locals() else True, timeout=30, verify=False)
+
+            response = _fetch(headers)
 
             if response.status_code == 416: # Range not satisfiable, restart
                 resume_byte_pos = 0
                 headers.pop("Range", None)
-                response = requests.get(url, headers=headers, stream=True, timeout=25)
+                response = _fetch(headers)
 
             response.raise_for_status()
 

@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Any
 @dataclass
 class SpeakerConfig:
     name: str
-    voice_id: str = "jenny"          # Default voice ID
+    voice_id: str = "af_heart"       # Default voice ID
     pan: float = 0.0                 # -1.0 (full left) to +1.0 (full right)
     speed: float = 1.0               # 0.5 to 2.0
     pitch: float = 0.0               # -5 to +5
@@ -26,7 +26,7 @@ class PodcastSegment:
     pan: float = 0.0
     speed: float = 1.0
     pitch: float = 0.0
-    voice_id: str = "jenny"
+    voice_id: str = "af_heart"
     raw_line: str = ""
 
 @dataclass
@@ -44,14 +44,14 @@ class ScriptParser:
     """Robust parser for podcast script text files."""
 
     DEFAULT_VOICE_MAP = {
-        0: "jenny",   # US Female, warm and natural
-        1: "guy",     # US Male, dynamic and conversational
-        2: "aria",    # US Female, expressive storyteller
-        3: "davis",   # US Male, calm and academic
-        4: "sonia",   # UK Female, British academic
-        5: "ryan",    # UK Male, British storytelling
-        6: "libby",   # UK Female, lively British
-        7: "natasha", # Australian Female
+        0: "af_heart",   # US Female, Flagship Studio Heart voice
+        1: "am_adam",    # US Male, dynamic and resonant
+        2: "bf_emma",    # UK Female, refined storyteller
+        3: "af_bella",   # US Female, warm and natural
+        4: "bm_george",  # UK Male, articulate narrator
+        5: "af_sky",     # US Female, lively and fresh
+        6: "bm_lewis",   # UK Male, distinct storytelling
+        7: "af_nicole",  # US Female, conversational
     }
 
     def __init__(self):

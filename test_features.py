@@ -83,8 +83,26 @@ def test_audio_processor():
     assert mastered.shape == stereo_tone.shape
     print("[OK] AudioProcessor stereo panning and EBU R128 mastering verified successfully.")
 
+from core.kokoro_engine import KokoroEnglishEngine
+from ui.components import CleanButton
+
+def test_kokoro_engine():
+    print("--- 5. Testing Kokoro-TTS Heart Engine ---")
+    kokoro = KokoroEnglishEngine()
+    assert kokoro.name.startswith("Kokoro-TTS")
+    speakers = kokoro.get_speakers()
+    assert len(speakers) == 11
+    assert any(s["id"] == "af_heart" for s in speakers)
+
+    # Synthesis test
+    audio = kokoro.synthesize_utterance("Podcasts with Heart is now powered by Kokoro.", voice_id="af_heart")
+    assert audio is not None
+    assert len(audio) > 10000
+    assert audio.dtype == np.float32
+    print("[OK] KokoroEnglishEngine 100% offline synthesis verified with flagship 'Heart' voice.")
+
 def test_voice_catalogs():
-    print("--- 5. Testing Voice Catalogs & Previews ---")
+    print("--- 6. Testing Voice Catalogs & Previews ---")
     edge = MicrosoftNeuralEnglishEngine()
     speakers_edge = edge.get_speakers()
     assert len(speakers_edge) >= 8
@@ -94,12 +112,23 @@ def test_voice_catalogs():
     assert len(speakers_piper) >= 4
 
     preview_mgr = VoicePreviewManager()
-    phrase = preview_mgr.get_sample_phrase("jenny")
-    assert "Jenny" in phrase
+    phrase = preview_mgr.get_sample_phrase("heart")
+    assert "Heart" in phrase
 
     downloader = ModelDownloader()
+    assert "kokoro_heart" in downloader.MODEL_REPOSITORIES
     assert "piper_lessac" in downloader.MODEL_REPOSITORIES
     print("[OK] Voice catalogs, preview phrases, and downloader verified successfully.")
+
+def test_ui_components():
+    print("--- 7. Testing Accessible UI Components ---")
+    import customtkinter as ctk
+    root = ctk.CTk()
+    btn = CleanButton(root, text="Test", style="primary")
+    btn.configure(style="danger")
+    assert btn.cget("text") == "Test"
+    root.destroy()
+    print("[OK] CleanButton accessible styling and configure verified successfully.")
 
 def main():
     print("=" * 60)
@@ -109,7 +138,9 @@ def main():
     test_normalizer()
     test_script_parser()
     test_audio_processor()
+    test_kokoro_engine()
     test_voice_catalogs()
+    test_ui_components()
     print("\n*** ALL TESTS PASSED SUCCESSFULLY! (100% OPERATIONAL) ***\n")
 
 if __name__ == "__main__":

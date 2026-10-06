@@ -10,9 +10,9 @@
 - Speaker 2: educational practitioner, pragmatic and warm tone (American English)
 
 [VOICE_CONFIG]
-Host: voice=davis pan=0% speed=0.98 pitch=-1
-Speaker 1: voice=sonia pan=-25% speed=1.0 pitch=0
-Speaker 2: voice=guy pan=+25% speed=1.02 pitch=0
+Host: voice=af_heart pan=0% speed=1.0 pitch=0
+Speaker 1: voice=bf_emma pan=-25% speed=1.0 pitch=0
+Speaker 2: voice=am_adam pan=+25% speed=1.0 pitch=0
 
 ---
 

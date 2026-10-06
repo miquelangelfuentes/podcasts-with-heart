@@ -30,6 +30,18 @@ class VoicePreviewManager:
     """Manages audio generation, caching, and playback of voice samples."""
 
     SAMPLE_PHRASES = {
+        # Kokoro-TTS Offline Voices (Studio Quality)
+        "heart": "Hello! I am Heart, an ultra-expressive neural studio voice crafted with love for Podcasts with Heart.",
+        "bella": "Hi there! I'm Bella, a warm and natural American English voice.",
+        "nicole": "Hi, I'm Nicole, an engaging and pleasant conversational voice.",
+        "sarah": "Hello everyone, I'm Sarah, presenting clear narratives with warmth and poise.",
+        "sky": "Hey, I'm Sky, bringing dynamic freshness to your podcast episodes.",
+        "adam": "Greetings, I'm Adam, providing deep, resonant and confident narration.",
+        "michael": "Hello, I'm Michael, an authentic and articulate voice for podcasts.",
+        "emma": "Hello, I'm Emma, a refined British English voice with poise and elegance.",
+        "isabella": "Greetings, I'm Isabella, a gentle and clear British English narrator.",
+        "george": "Good day, I'm George, an articulate British voice for storytelling and documentaries.",
+        "lewis": "Hello there, I'm Lewis, delivering distinct and engaging British narration.",
         # Cloud Voices (Edge-TTS)
         "jenny": "Hello, I'm Jenny. I'm a warm American English voice for your podcasts.",
         "guy": "Hey there, I'm Guy. Let's create an engaging conversational episode today.",
@@ -87,7 +99,13 @@ class VoicePreviewManager:
             self._is_playing = True
 
             clean_id = voice_id.lower().strip()
-            engine_tag = "piper" if "piper" in getattr(engine, "name", "").lower() else "edge"
+            eng_name = getattr(engine, "name", "").lower()
+            if "kokoro" in eng_name:
+                engine_tag = "kokoro"
+            elif "piper" in eng_name:
+                engine_tag = "piper"
+            else:
+                engine_tag = "edge"
             wav_path = os.path.join(self.cache_dir, f"preview_{engine_tag}_{clean_id}.wav")
 
             # Check if pre-cached

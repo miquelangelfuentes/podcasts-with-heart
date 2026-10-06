@@ -10,6 +10,7 @@ import sys
 import time
 import queue
 import threading
+import tempfile
 import ctypes
 from typing import Optional, Dict, Any, List
 
@@ -28,8 +29,9 @@ from ui.components_modal import ComponentsManagerModal
 from core.script_parser import ScriptParser, PodcastScript, SpeakerConfig, PodcastSegment
 from core.audio_processor import AudioProcessor
 from core.text_normalizer import EnglishTextNormalizer
-from core.edge_tts_engine import MicrosoftNeuralEnglishEngine
+from core.kokoro_engine import KokoroEnglishEngine
 from core.piper_engine import PiperEnglishEngine
+from core.edge_tts_engine import MicrosoftNeuralEnglishEngine
 from core.voice_preview import VoicePreviewManager
 from core.model_downloader import ModelDownloader
 
@@ -54,9 +56,10 @@ class MainWindow(ctk.CTk):
         # Core engines
         self.script_parser = ScriptParser()
         self.text_normalizer = EnglishTextNormalizer()
-        self.edge_engine = MicrosoftNeuralEnglishEngine()
+        self.kokoro_engine = KokoroEnglishEngine()
         self.piper_engine = PiperEnglishEngine()
-        self.tts_engine = self.edge_engine # Default: high quality online, or piper
+        self.edge_engine = MicrosoftNeuralEnglishEngine()
+        self.tts_engine = self.kokoro_engine # Flagship Studio Heart Engine by default
         self.audio_processor = AudioProcessor(sample_rate=22050)
         self.voice_preview_manager = VoicePreviewManager()
 
@@ -155,7 +158,7 @@ class MainWindow(ctk.CTk):
 
         self.badge = ctk.CTkLabel(
             brand_frame,
-            text="Piper Neural & Microsoft Neural (Studio Quality 22kHz)",
+            text="❤️ Kokoro-TTS (Studio Quality 100% Offline Heart Engine)",
             font=HeartTheme.FONT_SMALL,
             text_color=HeartTheme.TEXT_MUTED
         )
@@ -329,8 +332,9 @@ class MainWindow(ctk.CTk):
         self.engine_combo = ctk.CTkComboBox(
             engine_row,
             values=[
-                "☁️ Microsoft Neural English (Online — 8 Expressive Voices)",
-                "🎙️ Piper Neural English (100% Offline — Lessac, Amy, Ryan, Alan)"
+                "❤️ Kokoro-TTS (100% Offline — Studio Quality Heart Engine)",
+                "🎙️ Piper Neural English (100% Offline — Lessac, Amy, Ryan, Alan)",
+                "☁️ Microsoft Neural English (Online — 8 Expressive Voices)"
             ],
             height=28,
             corner_radius=14,
@@ -345,7 +349,7 @@ class MainWindow(ctk.CTk):
             command=self._on_engine_change
         )
         self.engine_combo.pack(side="left", fill="x", expand=True)
-        self.engine_combo.set("☁️ Microsoft Neural English (Online — 8 Expressive Voices)")
+        self.engine_combo.set("❤️ Kokoro-TTS (100% Offline — Studio Quality Heart Engine)")
 
         self.speakers_container = ctk.CTkFrame(
             speakers_card,
@@ -461,27 +465,69 @@ class MainWindow(ctk.CTk):
             self.btn_school.configure(fg_color=HeartTheme.PRIMARY, text_color="#FFFFFF", text="🏫 School Mode ✔")
             self.badge.pack_forget()
             self.school_badge.pack(side="left", padx=(8, 0))
-            self.engine_combo.configure(values=["🎙️ Piper Neural English (100% Offline — Lessac, Amy, Ryan, Alan)"])
-            self.engine_combo.set("🎙️ Piper Neural English (100% Offline — Lessac, Amy, Ryan, Alan)")
-            self._on_engine_change("🎙️ Piper Neural English (100% Offline — Lessac, Amy, Ryan, Alan)")
+            self.engine_combo.configure(values=[
+                "❤️ Kokoro-TTS (100% Offline — Studio Quality Heart Engine)",
+                "🎙️ Piper Neural English (100% Offline — Fast & Lightweight)"
+            ])
+            if "Microsoft" in self.engine_combo.get():
+                self.engine_combo.set("❤️ Kokoro-TTS (100% Offline — Studio Quality Heart Engine)")
+                self._on_engine_change("❤️ Kokoro-TTS (100% Offline — Studio Quality Heart Engine)")
         else:
             self.btn_school.configure(fg_color="#FFFFFF", text_color=HeartTheme.TEXT_MAIN, text="🏫 School Mode")
             self.school_badge.pack_forget()
             self.badge.pack(side="left")
             all_engines = [
-                "☁️ Microsoft Neural English (Online — 8 Expressive Voices)",
-                "🎙️ Piper Neural English (100% Offline — Lessac, Amy, Ryan, Alan)"
+                "❤️ Kokoro-TTS (100% Offline — Studio Quality Heart Engine)",
+                "🎙️ Piper Neural English (100% Offline — Fast & Lightweight)",
+                "☁️ Microsoft Neural English (Online — 8 Expressive Voices)"
             ]
             self.engine_combo.configure(values=all_engines)
 
     def _on_engine_change(self, choice):
-        if "Piper" in choice:
+        if "Kokoro" in choice or "Heart" in choice:
+            self.tts_engine = self.kokoro_engine
+            self.badge.configure(text="❤️ Kokoro-TTS (Studio Quality 100% Offline Heart Engine)")
+        elif "Piper" in choice:
             self.tts_engine = self.piper_engine
-            self.badge.configure(text="Piper Neural English (100% Offline, Local & Private)")
+            self.badge.configure(text="🎙️ Piper Neural English (100% Offline, Fast & Private)")
         else:
             self.tts_engine = self.edge_engine
-            self.badge.configure(text="Microsoft Neural English (Online — Studio Expressive Voices)")
+            self.badge.configure(text="☁️ Microsoft Neural English (Online — 8 Expressive Cloud Voices)")
         self._refresh_speakers_ui()
+
+    @staticmethod
+    def _pan_val_to_label(pan_val: float) -> str:
+        if pan_val <= -0.38:
+            return "-50% L"
+        elif pan_val <= -0.12:
+            return "-25% L"
+        elif pan_val >= 0.38:
+            return "+50% R"
+        elif pan_val >= 0.12:
+            return "+25% R"
+        else:
+            return "Center"
+
+    @staticmethod
+    def _pan_label_to_val(label: str) -> float:
+        mapping = {
+            "-50% L": -0.50,
+            "-25% L": -0.25,
+            "Center": 0.0,
+            "Centre": 0.0,
+            "+25% R": 0.25,
+            "+50% R": 0.50
+        }
+        return mapping.get(label, 0.0)
+
+    @staticmethod
+    def _pan_val_to_str(pan_val: float) -> str:
+        if abs(pan_val) < 0.05:
+            return "0%"
+        elif pan_val < 0:
+            return f"-{int(round(abs(pan_val)*100))}%"
+        else:
+            return f"+{int(round(pan_val*100))}%"
 
     def _refresh_speakers_ui(self):
         for widget in self.speakers_container.winfo_children():
@@ -493,18 +539,42 @@ class MainWindow(ctk.CTk):
             lbl.pack(pady=8)
             return
 
+        # Re-apply any existing UI overrides so user selections never revert
+        for spk_name, overrides in self.ui_speaker_overrides.items():
+            if spk_name in speakers:
+                if "voice_id" in overrides:
+                    speakers[spk_name].voice_id = overrides["voice_id"]
+                if "pan" in overrides:
+                    speakers[spk_name].pan = overrides["pan"]
+
         available_speakers = self.tts_engine.get_speakers()
         voice_ids = [s["id"] for s in available_speakers]
         voice_display = [f"{s['name']}" for s in available_speakers]
 
         for spk_idx, (spk_name, spk_cfg) in enumerate(speakers.items()):
-            row = ctk.CTkFrame(self.speakers_container, fg_color="transparent")
-            row.pack(fill="x", padx=10, pady=5)
+            card = ctk.CTkFrame(
+                self.speakers_container,
+                fg_color=HeartTheme.BG_CARD,
+                corner_radius=8,
+                border_width=1,
+                border_color=HeartTheme.BORDER_CARD
+            )
+            card.pack(fill="x", padx=6, pady=4)
 
-            name_lbl = ctk.CTkLabel(row, text=f"👤 {spk_name}:", font=HeartTheme.FONT_SMALL_BOLD, text_color=HeartTheme.TEXT_MAIN, width=80, anchor="w")
+            # Line 1: Speaker Name + Voice ComboBox + Preview Button
+            line1 = ctk.CTkFrame(card, fg_color="transparent")
+            line1.pack(fill="x", padx=10, pady=(6, 2))
+
+            name_lbl = ctk.CTkLabel(
+                line1,
+                text=f"👤 {spk_name}:",
+                font=HeartTheme.FONT_SMALL_BOLD,
+                text_color=HeartTheme.TEXT_MAIN,
+                width=80,
+                anchor="w"
+            )
             name_lbl.pack(side="left")
 
-            # Check if current spk_cfg.voice_id belongs to the active engine
             match_idx = -1
             for idx, vid in enumerate(voice_ids):
                 if vid.lower() == spk_cfg.voice_id.lower() or vid.lower() in spk_cfg.voice_id.lower():
@@ -512,40 +582,117 @@ class MainWindow(ctk.CTk):
                     break
 
             if match_idx == -1 and voice_ids:
-                # Engine switched: reassign to a valid voice for this speaker
                 match_idx = spk_idx % len(voice_ids)
                 spk_cfg.voice_id = voice_ids[match_idx]
 
             combo = ctk.CTkComboBox(
-                row,
+                line1,
                 values=voice_display,
                 height=26,
                 font=HeartTheme.FONT_TINY,
                 dropdown_font=HeartTheme.FONT_TINY,
                 command=lambda val, name=spk_name: self._on_speaker_voice_change(name, val)
             )
-            if voice_display and match_idx >= 0 and match_idx < len(voice_display):
+            if voice_display and 0 <= match_idx < len(voice_display):
                 combo.set(voice_display[match_idx])
             combo.pack(side="left", fill="x", expand=True, padx=(4, 6))
 
-            # Preview button: reads LIVE speaker voice dynamically
             btn_prev = CleanButton(
-                row,
+                line1,
                 style="subtle",
                 text="▶",
-                width=28,
+                width=30,
                 height=26
             )
             btn_prev.configure(command=lambda name=spk_name, btn=btn_prev: self._play_speaker_sample(name, btn))
             btn_prev.pack(side="right")
 
+            # Line 2: Stereo Panning with PillSelector
+            pan_line = ctk.CTkFrame(card, fg_color="transparent")
+            pan_line.pack(fill="x", padx=10, pady=(2, 6))
+
+            pan_lbl = ctk.CTkLabel(
+                pan_line,
+                text="Stereo pan:",
+                font=HeartTheme.FONT_TINY,
+                text_color=HeartTheme.TEXT_MUTED,
+                width=80,
+                anchor="w"
+            )
+            pan_lbl.pack(side="left")
+
+            pan_seg = PillSelector(
+                pan_line,
+                values=["-50% L", "-25% L", "Center", "+25% R", "+50% R"],
+                default_val=self._pan_val_to_label(spk_cfg.pan),
+                height=24,
+                font_size=9,
+                expand_buttons=True,
+                command=lambda val, name=spk_name: self._on_speaker_pan_change(name, val)
+            )
+            pan_seg.pack(side="left", fill="x", expand=True, padx=(4, 0))
+
     def _on_speaker_voice_change(self, spk_name: str, choice: str):
         available = self.tts_engine.get_speakers()
+        voice_id = None
         for s in available:
             if s["name"] == choice or s["id"] == choice:
-                if spk_name in self.current_script.speakers:
-                    self.current_script.speakers[spk_name].voice_id = s["id"]
+                voice_id = s["id"]
                 break
+        if not voice_id and available:
+            voice_id = available[0]["id"]
+
+        if voice_id:
+            if spk_name in self.current_script.speakers:
+                self.current_script.speakers[spk_name].voice_id = voice_id
+            if spk_name not in self.ui_speaker_overrides:
+                self.ui_speaker_overrides[spk_name] = {}
+            self.ui_speaker_overrides[spk_name]["voice_id"] = voice_id
+            self._sync_speaker_config_to_editor(spk_name)
+
+    def _on_speaker_pan_change(self, spk_name: str, pan_label: str):
+        pan_val = self._pan_label_to_val(pan_label)
+        if spk_name in self.current_script.speakers:
+            self.current_script.speakers[spk_name].pan = pan_val
+        if spk_name not in self.ui_speaker_overrides:
+            self.ui_speaker_overrides[spk_name] = {}
+        self.ui_speaker_overrides[spk_name]["pan"] = pan_val
+        self._sync_speaker_config_to_editor(spk_name)
+
+    def _sync_speaker_config_to_editor(self, spk_name: str):
+        """If editor is in full mode, updates the voice and pan in the raw script text."""
+        if self.editor_mode != "full":
+            return
+        if spk_name not in self.current_script.speakers:
+            return
+
+        spk_cfg = self.current_script.speakers[spk_name]
+        pan_str = self._pan_val_to_str(spk_cfg.pan)
+        voice_id = spk_cfg.voice_id
+
+        content = self.script_textbox.get("1.0", "end-1c")
+        spk_line_pattern = re.compile(rf"^(\s*{re.escape(spk_name)}\s*:\s*)([^\r\n]*)", re.MULTILINE)
+        m = spk_line_pattern.search(content)
+        if m:
+            prefix = m.group(1)
+            rest = m.group(2)
+            if re.search(r'\b(?:voice|veu)=([^\s]+)', rest, flags=re.IGNORECASE):
+                rest = re.sub(r'\b(?:voice|veu)=([^\s]+)', f'voice={voice_id}', rest, flags=re.IGNORECASE)
+            else:
+                rest = f"voice={voice_id} " + rest
+            if re.search(r'\b(?:pan|panning)=([^\s]+)', rest, flags=re.IGNORECASE):
+                rest = re.sub(r'\b(?:pan|panning)=([^\s]+)', f'pan={pan_str}', rest, flags=re.IGNORECASE)
+            else:
+                rest = rest + f" pan={pan_str}"
+            new_line = f"{prefix}{rest.strip()}"
+            updated = content[:m.start()] + new_line + content[m.end():]
+
+            self._suppress_script_sync = True
+            try:
+                self.script_textbox.delete("1.0", "end")
+                self.script_textbox.insert("1.0", updated)
+            finally:
+                self._suppress_script_sync = False
 
     def _play_speaker_sample(self, spk_name: str, btn: CleanButton):
         if spk_name not in self.current_script.speakers:
@@ -659,6 +806,12 @@ class MainWindow(ctk.CTk):
         else:
             full = content
         self.current_script = self.script_parser.parse(full)
+        for spk_name, overrides in self.ui_speaker_overrides.items():
+            if spk_name in self.current_script.speakers:
+                if "voice_id" in overrides:
+                    self.current_script.speakers[spk_name].voice_id = overrides["voice_id"]
+                if "pan" in overrides:
+                    self.current_script.speakers[spk_name].pan = overrides["pan"]
         self._refresh_speakers_ui()
 
     def _insert_pause(self, ms: int):
@@ -668,6 +821,7 @@ class MainWindow(ctk.CTk):
     def _open_script_file(self):
         path = filedialog.askopenfilename(filetypes=[("Text Script (*.txt)", "*.txt"), ("All Files (*.*)", "*.*")])
         if path:
+            self.ui_speaker_overrides.clear()
             with open(path, "r", encoding="utf-8") as f:
                 self._load_script_content(f.read())
 
@@ -682,15 +836,13 @@ class MainWindow(ctk.CTk):
             messagebox.showinfo("Saved", "Script saved successfully!")
 
     def _select_bg_music(self):
+        self._stop_bg_preview()
         path = filedialog.askopenfilename(filetypes=[("Audio Files (*.mp3;*.wav;*.ogg;*.flac)", "*.mp3;*.wav;*.ogg;*.flac")])
         if path:
             self.bg_music_path = path
             self.bg_file_lbl.configure(text=os.path.basename(path), text_color=HeartTheme.TEXT_MAIN)
             try:
-                data, sr = sf.read(path, dtype="float32")
-                if sr != 22050:
-                    data = scipy.signal.resample(data, int(len(data) * (22050 / sr)))
-                self.bg_music_audio_data = data
+                self.bg_music_audio_data = self.audio_processor.load_audio_file(path, target_sr=22050)
             except Exception as e:
                 messagebox.showerror("Audio Error", f"Could not load audio track: {e}")
 
@@ -699,13 +851,156 @@ class MainWindow(ctk.CTk):
         self.vol_lbl.configure(text=f"Vol: {int(val)}%")
 
     def _toggle_bg_preview(self):
-        # Quick preview
-        pass
+        """Plays or stops a preview of background music at selected volume."""
+        if getattr(self, "_is_bg_previewing", False):
+            self._stop_bg_preview()
+            self._set_status("Background music preview stopped.")
+            return
+
+        if not self.bg_music_path or not os.path.exists(self.bg_music_path):
+            messagebox.showwarning("Notice", "Please select a background audio file first.")
+            return
+
+        self._play_bg_preview_sound()
+
+    def _play_bg_preview_sound(self):
+        """Generates and plays background music preview chunk."""
+        if not self.bg_music_path or not os.path.exists(self.bg_music_path):
+            return
+
+        try:
+            if self.bg_music_audio_data is not None:
+                audio = self.bg_music_audio_data
+            else:
+                self._set_status("Loading audio track...")
+                audio = self.audio_processor.load_audio_file(self.bg_music_path, target_sr=22050)
+                self.bg_music_audio_data = audio
+
+            if audio is None or audio.size == 0:
+                self._stop_bg_preview()
+                self._set_status("Could not load audio from selected file.")
+                return
+
+            max_samples = int(10.0 * 22050)
+            chunk = np.copy(audio[:, :min(audio.shape[1], max_samples)])
+
+            # Soft fade 30ms
+            fade_samples = min(int(0.03 * 22050), chunk.shape[1] // 4)
+            if fade_samples > 0:
+                curve_in = np.linspace(0.0, 1.0, fade_samples, dtype=np.float32)
+                curve_out = np.linspace(1.0, 0.0, fade_samples, dtype=np.float32)
+                chunk[:, :fade_samples] *= curve_in
+                chunk[:, -fade_samples:] *= curve_out
+
+            vol = max(0.0, min(1.0, float(self.bg_music_volume)))
+            scaled = np.clip(chunk * vol, -1.0, 1.0)
+
+            tmp_dir = os.path.join(tempfile.gettempdir(), "podcasts_heart_preview")
+            os.makedirs(tmp_dir, exist_ok=True)
+            self._bg_preview_tmp_wav = os.path.join(tmp_dir, f"bg_preview_{os.getpid()}.wav")
+            sf.write(self._bg_preview_tmp_wav, scaled.T, 22050, subtype="PCM_16")
+
+            self._is_bg_previewing = True
+            played = False
+
+            if sys.platform == "win32":
+                try:
+                    import winsound
+                    flags = winsound.SND_FILENAME | winsound.SND_ASYNC
+                    if self.bg_music_loop:
+                        flags |= winsound.SND_LOOP
+                    winsound.PlaySound(self._bg_preview_tmp_wav, flags)
+                    played = True
+                except Exception as we:
+                    print(f"Winsound warning: {we}")
+
+            if not played:
+                try:
+                    import pygame
+                    if not pygame.mixer.get_init():
+                        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=1024)
+                    pygame.mixer.music.load(self._bg_preview_tmp_wav)
+                    pygame.mixer.music.play(-1 if self.bg_music_loop else 0)
+                    played = True
+                except Exception as pe:
+                    print(f"Pygame warning: {pe}")
+
+            if played:
+                self.btn_bg_preview.configure(
+                    text="■ Stop",
+                    fg_color=HeartTheme.PRIMARY,
+                    text_color="#FFFFFF"
+                )
+                dur_secs = chunk.shape[1] / 22050.0
+                loop_text = "in loop" if self.bg_music_loop else f"{dur_secs:.1f}s"
+                self._set_status(f"Playing background music preview ({loop_text}, volume {int(round(vol*100))}%)...")
+
+                if not self.bg_music_loop:
+                    dur_ms = int(dur_secs * 1000) + 150
+                    if self._bg_preview_timer_id:
+                        try:
+                            self.after_cancel(self._bg_preview_timer_id)
+                        except Exception:
+                            pass
+                    self._bg_preview_timer_id = self.after(dur_ms, self._on_bg_preview_finished)
+            else:
+                self._stop_bg_preview()
+                self._set_status("Could not play sound on audio device.")
+
+        except Exception as e:
+            print(f"Error in _play_bg_preview_sound: {e}")
+            self._stop_bg_preview()
+            self._set_status(f"Error previewing audio: {e}")
+
+    def _on_bg_preview_finished(self):
+        self._is_bg_previewing = False
+        self._bg_preview_timer_id = None
+        try:
+            self.btn_bg_preview.configure(
+                text="▶ Test",
+                fg_color="#FFFFFF",
+                text_color=HeartTheme.TEXT_MAIN
+            )
+            self._set_status("Ready to generate. No duration limits.")
+        except Exception:
+            pass
+
+    def _stop_bg_preview(self):
+        self._is_bg_previewing = False
+        if self._bg_preview_timer_id:
+            try:
+                self.after_cancel(self._bg_preview_timer_id)
+            except Exception:
+                pass
+            self._bg_preview_timer_id = None
+
+        if sys.platform == "win32":
+            try:
+                import winsound
+                winsound.PlaySound(None, winsound.SND_PURGE)
+            except Exception:
+                pass
+        try:
+            import pygame
+            if pygame.mixer.get_init():
+                pygame.mixer.music.stop()
+        except Exception:
+            pass
+
+        try:
+            self.btn_bg_preview.configure(
+                text="▶ Test",
+                fg_color="#FFFFFF",
+                text_color=HeartTheme.TEXT_MAIN
+            )
+        except Exception:
+            pass
 
     def _start_generation(self):
         if self.is_generating:
             return
 
+        self._stop_bg_preview()
         self._sync_script_from_ui()
         if not self.current_script.segments:
             messagebox.showwarning("Empty Script", "Please enter script dialogue before generating.")
@@ -754,6 +1049,9 @@ class MainWindow(ctk.CTk):
                         speed=curr_speed,
                         pitch=curr_pitch
                     )
+                    if raw_audio is None or len(raw_audio) == 0:
+                        raise RuntimeError(f"Speech synthesis returned empty audio for speaker '{seg.speaker}' with voice '{curr_voice}'.")
+
                     stereo_seg = self.audio_processor.apply_pan(raw_audio, curr_pan)
                     audio_blocks.append(stereo_seg)
 
