@@ -81,7 +81,17 @@ def test_audio_processor():
     stereo_tone = np.vstack([tone, tone])
     mastered = proc.normalize_loudness(stereo_tone, target_lufs=-16.0)
     assert mastered.shape == stereo_tone.shape
-    print("[OK] AudioProcessor stereo panning and EBU R128 mastering verified successfully.")
+
+    # Test auto-ducking on background music
+    voice_sig = np.zeros((2, 22050 * 2), dtype=np.float32)
+    voice_sig[:, :22050] = 0.5 * np.sin(2 * np.pi * 440 * np.linspace(0, 1, 22050))
+    bg_sig = 0.5 * np.vstack([np.sin(2 * np.pi * 220 * np.linspace(0, 2, 22050 * 2))] * 2).astype(np.float32)
+    mixed_ducked = proc.mix_background_track(voice_sig, bg_sig, volume=0.4, ducking=True)
+    assert mixed_ducked.shape == voice_sig.shape
+    talk_bg = np.mean((mixed_ducked[:, :22050] - voice_sig[:, :22050]) ** 2)
+    pause_bg = np.mean((mixed_ducked[:, 22050:] - voice_sig[:, 22050:]) ** 2)
+    assert pause_bg > talk_bg * 3.0  # Verify music is significantly attenuated during speech
+    print("[OK] AudioProcessor stereo panning, auto-ducking, and EBU R128 mastering verified successfully.")
 
 from core.kokoro_engine import KokoroEnglishEngine
 from ui.components import CleanButton

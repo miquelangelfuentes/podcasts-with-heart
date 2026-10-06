@@ -68,6 +68,7 @@ Pre-built standalone packages are provided directly in the official GitHub Relea
   - **☁️ Microsoft Neural English (Online)**: Studio-grade cloud voices with US, UK, and Australian accents (Jenny, Guy, Aria, Davis, Sonia, Ryan, Libby, Natasha).
 - **Background Music & Ambience Track**:
   - Load background soundtrack (MP3, WAV, OGG, FLAC) in continuous loop with seamless cross-fading.
+  - **Intelligent Auto-Ducking**: Automatically attenuates background music (-12 dB) during vocal speech and smoothly restores full soundtrack presence during pauses and silences. Can be toggled on/off in one click.
   - Dynamic volume slider (default 15% to maintain vocal clarity) and instant live preview button (`▶ Preview` / `■ Stop`).
   - Studio-grade 1-second fade-in, 2-second fade-out, and soft peak limiter.
 - **Broadcast EBU R128 Loudness Mastering**:

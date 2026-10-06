@@ -119,6 +119,7 @@ class MainWindow(ctk.CTk):
         # Background music settings
         self.bg_music_path: Optional[str] = None
         self.bg_music_loop: bool = True
+        self.bg_music_ducking: bool = True
         self.bg_music_volume: float = 0.15
         self.bg_music_audio_data: Optional[np.ndarray] = None
         self._bg_preview_sound = None
@@ -746,7 +747,7 @@ class MainWindow(ctk.CTk):
 
         self.cb_bg_loop = ctk.CTkCheckBox(
             ctrl_row,
-            text="🔁 Play in continuous loop",
+            text="🔁 Loop",
             font=HeartTheme.FONT_SMALL,
             text_color=HeartTheme.TEXT_SECONDARY,
             checkmark_color=HeartTheme.TEXT_ON_PRIMARY,
@@ -755,8 +756,22 @@ class MainWindow(ctk.CTk):
             corner_radius=4,
             command=self._on_bg_loop_toggle
         )
-        self.cb_bg_loop.pack(side="left")
+        self.cb_bg_loop.pack(side="left", padx=(0, 10))
         self.cb_bg_loop.select()
+
+        self.cb_bg_ducking = ctk.CTkCheckBox(
+            ctrl_row,
+            text="📉 Auto-ducking",
+            font=HeartTheme.FONT_SMALL,
+            text_color=HeartTheme.TEXT_SECONDARY,
+            checkmark_color=HeartTheme.TEXT_ON_PRIMARY,
+            fg_color=HeartTheme.PRIMARY,
+            hover_color=HeartTheme.PRIMARY_HOVER,
+            corner_radius=4,
+            command=self._on_bg_ducking_toggle
+        )
+        self.cb_bg_ducking.pack(side="left")
+        self.cb_bg_ducking.select()
 
         self.btn_bg_preview = CleanButton(
             ctrl_row,
@@ -1623,6 +1638,9 @@ class MainWindow(ctk.CTk):
         if getattr(self, "_is_bg_previewing", False):
             self._play_bg_preview_sound()
 
+    def _on_bg_ducking_toggle(self):
+        self.bg_music_ducking = bool(self.cb_bg_ducking.get())
+
     def _on_bg_volume_change(self, val):
         self.bg_music_volume = float(val)
         pct = int(round(self.bg_music_volume * 100))
@@ -1874,7 +1892,8 @@ class MainWindow(ctk.CTk):
                         voice_audio=full_stereo,
                         bg_audio=self.bg_music_path,
                         volume=self.bg_music_volume,
-                        loop=self.bg_music_loop
+                        loop=self.bg_music_loop,
+                        ducking=self.bg_music_ducking
                     )
 
                 # EBU R128 loudness normalization
