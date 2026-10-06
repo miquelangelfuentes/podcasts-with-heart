@@ -849,6 +849,14 @@ class MainWindow(ctk.CTk):
     def _on_volume_change(self, val):
         self.bg_music_volume = float(val) / 100.0
         self.vol_lbl.configure(text=f"Vol: {int(val)}%")
+        # Live volume adjustment during preview
+        if getattr(self, "_is_bg_previewing", False):
+            try:
+                import pygame
+                if pygame.mixer.get_init():
+                    pygame.mixer.music.set_volume(self.bg_music_volume)
+            except Exception:
+                pass
 
     def _toggle_bg_preview(self):
         """Plays or stops a preview of background music at selected volume."""
@@ -893,18 +901,34 @@ class MainWindow(ctk.CTk):
                 chunk[:, -fade_samples:] *= curve_out
 
             vol = max(0.0, min(1.0, float(self.bg_music_volume)))
-            scaled = np.clip(chunk * vol, -1.0, 1.0)
 
             tmp_dir = os.path.join(tempfile.gettempdir(), "podcasts_heart_preview")
             os.makedirs(tmp_dir, exist_ok=True)
             self._bg_preview_tmp_wav = os.path.join(tmp_dir, f"bg_preview_{os.getpid()}.wav")
-            sf.write(self._bg_preview_tmp_wav, scaled.T, 22050, subtype="PCM_16")
+            # Save unscaled chunk to disk so pygame can dynamically set_volume in real time!
+            sf.write(self._bg_preview_tmp_wav, chunk.T, 22050, subtype="PCM_16")
 
             self._is_bg_previewing = True
             played = False
 
-            if sys.platform == "win32":
+            # Try Pygame mixer first so real-time set_volume works
+            try:
+                import pygame
+                if not pygame.mixer.get_init():
+                    pygame.mixer.init(frequency=22050, size=-16, channels=chunk.shape[0], buffer=1024)
+                pygame.mixer.music.load(self._bg_preview_tmp_wav)
+                pygame.mixer.music.set_volume(vol)
+                pygame.mixer.music.play(-1 if self.bg_music_loop else 0)
+                played = True
+            except Exception as pe:
+                print(f"Pygame warning: {pe}")
+
+            # Fallback to winsound (static volume) if pygame unavailable
+            if not played and sys.platform == "win32":
                 try:
+                    # winsound has no volume API, so bake current vol into audio
+                    scaled = np.clip(chunk * vol, -1.0, 1.0)
+                    sf.write(self._bg_preview_tmp_wav, scaled.T, 22050, subtype="PCM_16")
                     import winsound
                     flags = winsound.SND_FILENAME | winsound.SND_ASYNC
                     if self.bg_music_loop:
@@ -913,17 +937,6 @@ class MainWindow(ctk.CTk):
                     played = True
                 except Exception as we:
                     print(f"Winsound warning: {we}")
-
-            if not played:
-                try:
-                    import pygame
-                    if not pygame.mixer.get_init():
-                        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=1024)
-                    pygame.mixer.music.load(self._bg_preview_tmp_wav)
-                    pygame.mixer.music.play(-1 if self.bg_music_loop else 0)
-                    played = True
-                except Exception as pe:
-                    print(f"Pygame warning: {pe}")
 
             if played:
                 self.btn_bg_preview.configure(
