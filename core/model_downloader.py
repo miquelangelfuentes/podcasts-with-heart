@@ -180,13 +180,21 @@ class ModelDownloader:
             "files": files_detail
         }
 
+    def get_all_components_status(self) -> Dict[str, Dict[str, Any]]:
+        """Returns status dictionary for all registered models."""
+        return {key: self.get_component_status(key) for key in self.MODEL_REPOSITORIES}
+
+    def delete_component(self, model_key: str) -> bool:
+        """Alias for delete_model for UI compatibility."""
+        return self.delete_model(model_key)
+
     def download_model(
         self,
         model_key: str,
-        progress_callback: Optional[Callable[[float, str], None]] = None,
+        progress_callback: Optional[Callable[[int, int, str, float], None]] = None,
         speed_callback: Optional[Callable[[float], None]] = None
     ) -> bool:
-        """Synchronously downloads a model from Hugging Face with progress callbacks."""
+        """Synchronously downloads a model from Hugging Face or GitHub Releases with progress callbacks."""
         if model_key not in self.MODEL_REPOSITORIES:
             self.last_error = f"Model {model_key} not recognized."
             return False
@@ -228,7 +236,7 @@ class ModelDownloader:
         url: str,
         dest_path: str,
         temp_path: str,
-        progress_callback: Optional[Callable[[float, str], None]],
+        progress_callback: Optional[Callable[[int, int, str, float], None]],
         speed_callback: Optional[Callable[[float], None]]
     ) -> bool:
         try:
@@ -264,6 +272,7 @@ class ModelDownloader:
             start_time = time.time()
             bytes_since_sample = 0
             last_sample_time = start_time
+            speed_mb_s = 0.0
 
             with open(temp_path, mode) as f:
                 for chunk in response.iter_content(chunk_size=65536):
@@ -276,19 +285,20 @@ class ModelDownloader:
 
                         now = time.time()
                         if now - last_sample_time >= 0.4:
-                            speed = bytes_since_sample / (now - last_sample_time)
+                            speed_mb_s = (bytes_since_sample / (now - last_sample_time)) / (1024 * 1024)
                             if speed_callback:
-                                speed_callback(speed)
+                                speed_callback(bytes_since_sample / (now - last_sample_time))
                             bytes_since_sample = 0
                             last_sample_time = now
 
-                        if progress_callback and total_size > 0:
-                            ratio = downloaded / total_size
-                            progress_callback(ratio, f"{downloaded / (1024*1024):.1f} / {total_size / (1024*1024):.1f} MB")
+                        if progress_callback:
+                            progress_callback(downloaded, total_size, os.path.basename(dest_path), speed_mb_s)
 
             if os.path.exists(dest_path):
                 os.remove(dest_path)
             os.rename(temp_path, dest_path)
+            if progress_callback:
+                progress_callback(total_size, total_size, os.path.basename(dest_path), 0.0)
             return True
 
         except Exception as e:
