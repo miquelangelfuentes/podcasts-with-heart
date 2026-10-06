@@ -130,7 +130,11 @@ On Windows, you can also double-click `run_app.bat`.
 ├── 📁 docs/                      # Documentation & Pedagogical Guides
 │   ├── 📄 SSML_GUIDE.md          # SSML tags, pauses, speed, and pitch reference
 │   ├── 📄 LLM_PROMPT_GUIDE.md    # Master prompt for ChatGPT/Claude/Gemini
-│   └── 📄 TEACHER_INFO_SHEET.md  # Pedagogical disclosure sheet for educators
+│   ├── 📄 TEACHER_INFO_SHEET.md  # Pedagogical disclosure sheet for educators
+│   ├── 📄 DECISIONS.md           # Architecture Decision Records (ADRs)
+│   └── 📄 CREDITS.md             # Third-party attribution & model licenses
+├── 📄 LICENSE                    # Official GNU AGPL v3 + CC BY-SA 4.0 license
+├── 📄 evaluacion-vcer.md         # Open Educational Resource VCER Audit Report (100%)
 ├── 📄 build_exe.py               # PyInstaller packager for Windows (.exe / .zip)
 ├── 📄 build_exe.bat              # 1-click Windows compilation script
 ├── 📄 build_linux.py             # PyInstaller packager for Linux (.tar.gz)
@@ -144,10 +148,22 @@ On Windows, you can also double-click `run_app.bat`.
 
 ## 📜 License & Credits
 
-- **Code License**: Open-source under [GNU AGPL v3](https://www.gnu.org/licenses/agpl-3.0.en.html).
-- **Contents & Documentation**: [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
-- **Created through intention-driven vibe coding** with Google Antigravity by **Miquel Àngel Fuentes**, adhering to Responsible Educational Vibe Coding guidelines.
-- **Voice Models & Engines**:
-  - [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (Hexgrad & thewh1teagle Kokoro ONNX)
-  - [Rhasspy Piper](https://github.com/rhasspy/piper)
-  - [Microsoft Edge TTS](https://github.com/rany2/edge-tts)
+- **Code License**: Open-source under [GNU AGPL v3](LICENSE).
+- **Contents & Documentation**: [Creative Commons BY-SA 4.0](LICENSE).
+- **Architecture & Technical Decisions**: See [`docs/DECISIONS.md`](docs/DECISIONS.md).
+- **Third-Party Attribution**: See [`docs/CREDITS.md`](docs/CREDITS.md) for full licensing information on Kokoro-82M, Piper, and bundled libraries.
+
+### 🤖 AI Disclosure & Human Verification
+
+This application was created through intention-driven vibe coding with **Google Antigravity**, directed and verified by **Miquel Àngel Fuentes** under Responsible Educational Vibe Coding guidelines.
+
+The author has personally conducted the following **rigorous human validations**:
+1. **Linguistic & Lexical Verification**: Thorough review of all sample scripts, templates, and acronym expansions against native standard English phonetics.
+2. **Acoustic & Audio Mastering Audit**: Critical listening audits of all 15 neural voices (Kokoro-82M and Piper) to eliminate digital clipping, calibrate seamless background music cross-fading, and guarantee compliance with the broadcast **EBU R128 (-16 LUFS)** standard.
+3. **Automated Quality Testing**: Creation and verification of the test suite (`py test_features.py`) testing ONNX model integrity, stereo spatialization, and MP3 audio mastering.
+4. **Offline Independence & Privacy Verification**: Empirical verification of the application running in airplane mode (zero internet connection) to ensure complete student data privacy and GDPR/FERPA compliance.
+
+---
+
+[Evaluación VCER de la versión 1.0: Recomendable (100 %), octubre de 2026](https://vibe-coding-educativo.github.io/vibe-responsable/vcer/?r=recomendable&p=100&f=2026-10&v=1.0&t=Podcasts%20with%20Heart&u=https%3A%2F%2Fgithub.com%2Fmiquelangelfuentes%2Fpodcasts-with-heart)
+
