@@ -190,7 +190,7 @@ class KokoroEnglishEngine:
             def _get(url, stream=False):
                 try:
                     return session.get(url, stream=stream, timeout=60, verify=True)
-                except requests.exceptions.SSLError:
+                except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, Exception):
                     return session.get(url, stream=stream, timeout=60, verify=False)
 
             # 1. Voices binary

@@ -97,8 +97,24 @@ class ModelDownloader:
         if cache_dir:
             self.cache_dir = os.path.abspath(cache_dir)
         else:
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            self.cache_dir = os.path.join(base_dir, "models")
+            exe_models = None
+            if getattr(sys, "frozen", False):
+                exe_dir = os.path.dirname(sys.executable)
+                candidate = os.path.join(exe_dir, "models")
+                internal_cand = os.path.join(exe_dir, "_internal", "models")
+                if os.path.exists(candidate):
+                    exe_models = candidate
+                elif os.path.exists(internal_cand):
+                    exe_models = internal_cand
+                else:
+                    exe_models = candidate
+
+            if exe_models:
+                self.cache_dir = exe_models
+            else:
+                base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+                self.cache_dir = os.path.join(base_dir, "models")
+
         os.makedirs(self.cache_dir, exist_ok=True)
         self._cancel_requested = False
         self.last_error = ""
@@ -228,9 +244,9 @@ class ModelDownloader:
 
             def _fetch(h):
                 try:
-                    return session.get(url, headers=h, stream=True, timeout=30, verify=True)
-                except requests.exceptions.SSLError:
-                    return session.get(url, headers=h, stream=stream if 'stream' in locals() else True, timeout=30, verify=False)
+                    return session.get(url, headers=h, stream=True, timeout=40, verify=True)
+                except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, Exception):
+                    return session.get(url, headers=h, stream=True, timeout=40, verify=False)
 
             response = _fetch(headers)
 

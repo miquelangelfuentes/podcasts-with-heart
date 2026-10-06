@@ -175,7 +175,7 @@ class PiperEnglishEngine:
             def _get(url, stream=False):
                 try:
                     return session.get(url, stream=stream, timeout=40, verify=True)
-                except requests.exceptions.SSLError:
+                except (requests.exceptions.SSLError, requests.exceptions.ConnectionError, Exception):
                     return session.get(url, stream=stream, timeout=40, verify=False)
 
             # JSON config

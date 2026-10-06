@@ -113,6 +113,13 @@ def build():
         print(f"\nCopying built files to {new_dist}...")
         robust_copy(built_dir, new_dist)
 
+        # Ensure models directory is also directly adjacent to the EXE
+        models_src = os.path.join(base_dir, "models")
+        models_dst = os.path.join(new_dist, "models")
+        if os.path.exists(models_src):
+            print(f"Syncing offline voice models directly to {models_dst}...")
+            robust_copy(models_src, models_dst)
+
         exe_path = os.path.join(new_dist, "PodcastsWithHeart.exe")
         print("\n" + "=" * 60)
         print("  [OK] Build of PodcastsWithHeart COMPLETED SUCCESSFULLY!")
