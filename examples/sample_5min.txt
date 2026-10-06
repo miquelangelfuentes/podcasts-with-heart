@@ -1,0 +1,53 @@
+[TITLE: Podcasts with Heart: Architecture and Features Tour]
+[DESCRIPTION: A special 5-minute educational episode where the Host, Speaker 1, and Speaker 2 guide you step-by-step through Podcasts with Heart, demonstrating 1, 2, and 3 voice setups, stereo spatialization, local neural AI synthesis with Kokoro-82M Heart Engine and Piper, and offline studio privacy.]
+[FORMAT: stereo 160 kbps]
+[DEFAULT_PAUSE: 350ms]
+[INTERLOCUTOR_PAUSE: 700ms]
+
+[VOICES]
+- Host: podcast presenter, warm, articulate, and instructional tone (US English)
+- Speaker 1: educational technologist and instructional design specialist (US English)
+- Speaker 2: secondary educator and collaborative teacher trainer (British English)
+
+[VOICE_CONFIG]
+Host: voice=af_heart pan=0% speed=1.0 pitch=0
+Speaker 1: voice=af_bella pan=-25% speed=1.0 pitch=0
+Speaker 2: voice=bm_george pan=+25% speed=1.0 pitch=0
+
+---
+
+Host: Welcome to this special presentation episode! Today, we are proud to introduce Podcasts with Heart, an accessible and powerful desktop application created specifically to empower teachers, students, and creators to generate high-fidelity, studio-quality audio podcasts directly on their computers. Joining our studio table today are Speaker 1 and Speaker 2.
+
+[PAUSE: 800ms]
+
+Speaker 1: Thank you so much for having me! I am truly thrilled to share this tool with the educational community. One of the greatest challenges educators face is producing engaging pedagogical audio without having to pay for expensive subscriptions or wrestle with complicated digital audio workstations.
+
+Speaker 2: The enthusiasm is completely mutual! As teachers, we know how deeply podcasting resonates with learners. But recording ourselves over multiple takes, editing out background noise, and balancing volume levels often consumes hours of valuable time that we simply do not have in our daily teaching schedules.
+
+[PAUSE: 500ms]
+
+Speaker 1: Exactly! And that is precisely why Podcasts with Heart was designed. The workflow is wonderfully straightforward. It all starts in the Script Editor, where you write dialogue lines formatted with the speaker's name followed by a colon. You can seamlessly choose between three core structures: a single-voice monologue with the Host centered, a dynamic two-voice dialogue between peers, or a full three-voice roundtable with a host and two guest experts.
+
+[PAUSE: 500ms]
+
+Speaker 2: The acoustic control is equally intuitive. In the Voice Cast panel, you can assign distinct voices to each character, audition instant vocal previews with the Test button, and position each voice across the stereo stage. Notice that in your headphones right now, Speaker 1 is placed slightly to the left at minus twenty-five percent, and I am speaking from the right at plus twenty-five percent, faithfully recreating a physical radio studio!
+
+[PAUSE: 600ms]
+
+Speaker 1: Another indispensable pillar of Podcasts with Heart is its dedication to privacy and offline independence. The app runs completely on your local machine using embedded neural models. No text, prompts, or audio recordings are ever transmitted across the internet. There are no cloud subscriptions, no token meters, and no arbitrary duration caps. You can generate everything from a two-minute lesson capsule to a comprehensive forty-minute masterclass.
+
+[PAUSE: 500ms]
+
+Speaker 2: And with the dedicated School Mode button in the header bar, you can instantly disable any external cloud connections with a single click, providing peace of mind for student privacy and compliance with strict data protection frameworks like GDPR and FERPA. Plus, you can drive the entire application using keyboard shortcuts, such as Control plus G to generate your full podcast hands-free!
+
+[PAUSE: 600ms]
+
+Speaker 1: Now, you might wonder: what engine powers this remarkable naturalness? Podcasts with Heart features Kokoro-82M, our flagship local neural engine, alongside Piper Neural English. Kokoro uses state-of-the-art StyleTTS2 architecture with an internal neural vocoder, producing studio-grade twenty-four kilohertz speech with exceptional cadence, prosody, and emotional clarity across eleven American and British studio voices.
+
+[PAUSE: 500ms]
+
+Speaker 2: In addition, background music or ambient sound can be seamlessly looped under the voices, with real-time volume ducking and live preview controls. When generation completes, the built-in mastering chain normalizes the audio to minus sixteen LUFS according to the international EBU R128 broadcasting standard, and exports a pristine MP3 file ready to upload to Google Classroom, Canvas, or Moodle!
+
+[PAUSE: 600ms]
+
+Host: We invite all educators and storytellers to explore the power of synthetic voices made accessible. Thank you for listening, and enjoy creating your educational podcasts with heart!
