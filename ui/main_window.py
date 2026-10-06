@@ -1779,12 +1779,13 @@ class MainWindow(ctk.CTk):
                     curr_pan = spk_cfg.pan if spk_cfg else seg.pan
                     curr_speed = spk_cfg.speed if spk_cfg else seg.speed
                     curr_pitch = spk_cfg.pitch if spk_cfg else seg.pitch
-
+                    should_normalize = bool(self.cb_normalizer.get())
                     raw_audio = self.tts_engine.synthesize_utterance(
                         seg.text,
                         voice_id=curr_voice,
                         speed=curr_speed,
-                        pitch=curr_pitch
+                        pitch=curr_pitch,
+                        normalize_text=should_normalize
                     )
                     if raw_audio is None or len(raw_audio) == 0:
                         raise RuntimeError(f"Speech synthesis returned empty audio for speaker '{seg.speaker}' with voice '{curr_voice}'.")

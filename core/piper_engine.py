@@ -235,12 +235,13 @@ class PiperEnglishEngine:
         return result
 
     def synthesize_utterance(self, text: str, voice_id: Any = "lessac",
-                             speed: float = 1.0, pitch: float = 0.0) -> np.ndarray:
+                             speed: float = 1.0, pitch: float = 0.0,
+                             normalize_text: bool = True) -> np.ndarray:
         """Synthesizes an English utterance into audio samples."""
         if not text or not text.strip():
             return np.zeros(0, dtype=np.float32)
 
-        normalized_text = self.text_normalizer.normalize(text)
+        normalized_text = self.text_normalizer.normalize(text) if normalize_text else text
         if not normalized_text:
             return np.zeros(0, dtype=np.float32)
 

@@ -132,10 +132,11 @@ class MicrosoftNeuralEnglishEngine:
         text: str,
         voice_id: str = "jenny",
         speed: float = 1.0,
-        pitch: float = 0.0
+        pitch: float = 0.0,
+        normalize_text: bool = True
     ) -> np.ndarray:
         """Synthesizes an English utterance into audio samples."""
-        text = self.text_normalizer.normalize(text)
+        text = self.text_normalizer.normalize(text) if normalize_text else text
         if not text.strip():
             return np.zeros(int(0.2 * self.sample_rate), dtype=np.float32)
 
