@@ -174,7 +174,7 @@ class ModelDownloader:
             "desc": info["desc"],
             "category": info["category"],
             "is_cloud": info.get("is_cloud", False),
-            "is_installed": is_complete or info.get("is_cloud", False),
+            "is_installed": False if info.get("is_cloud", False) else is_complete,
             "installed_size_mb": round(total_installed_bytes / (1024 * 1024), 2),
             "expected_size_mb": info["expected_size_mb"],
             "files": files_detail

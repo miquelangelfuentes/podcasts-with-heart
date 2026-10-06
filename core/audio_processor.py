@@ -143,12 +143,12 @@ class AudioProcessor:
         final_mastered = self.normalize_loudness(combined, target_lufs=-16.0, max_peak_db=-1.0)
         return final_mastered
 
-    def export_mp3(self, stereo_audio: np.ndarray, output_path: str, title: str = "Pòdcast amb Matxa",
-                   artist: str = "Pòdcasts amb Matxa · BSC-LT & alVoCat") -> str:
+    def export_mp3(self, stereo_audio: np.ndarray, output_path: str, title: str = "Podcasts with Heart",
+                   artist: str = "Podcasts with Heart · Kokoro & Piper",
+                   bitrate: str = "160k", **kwargs) -> str:
         """
-        Exporta l'àudio estèreo a format MP3 a 160 kbps CBR mitjançant FFmpeg.
-        (160 kbps és el màxim estàndard ISO MPEG-2 Layer 3 per a la freqüència de 22.05 kHz).
-        Inclou metadades ID3 i conversió directa d'alta qualitat.
+        Export stereo audio to MP3 format via FFmpeg.
+        Includes ID3 metadata and high quality constant bitrate conversion.
         """
         output_path = os.path.abspath(output_path)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -162,20 +162,20 @@ class AudioProcessor:
             sf_audio = stereo_audio.T
             sf.write(tmp_wav_path, sf_audio, self.sample_rate, subtype="FLOAT")
 
-            # Ordre FFmpeg per a MP3 160kbps estèreo constant bit-rate
+            # Ordre FFmpeg per a MP3 CBR
             cmd = [
                 self.ffmpeg_exe,
                 "-y",
                 "-i", tmp_wav_path,
                 "-vn",
-                "-ar", str(self.sample_rate if self.sample_rate in (44100, 48000, 22050) else 44100),
+                "-ar", str(self.sample_rate if self.sample_rate in (44100, 48000, 22050, 24000) else 44100),
                 "-ac", "2",
-                "-b:a", "160k",
+                "-b:a", bitrate,
                 "-c:a", "libmp3lame",
                 "-metadata", f"title={title}",
                 "-metadata", f"artist={artist}",
-                "-metadata", "album=Pòdcasts Educatius en Català",
-                "-metadata", "genre=Podcast / Educació",
+                "-metadata", "album=Podcasts with Heart",
+                "-metadata", "genre=Podcast",
                 output_path
             ]
 

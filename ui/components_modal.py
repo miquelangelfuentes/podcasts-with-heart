@@ -107,10 +107,23 @@ class ComponentsManagerModal(ctk.CTkToplevel):
         )
         name_lbl.pack(side="left")
 
+        is_cloud = status.get("is_cloud", False)
         is_installed = status["is_installed"]
-        badge_text = "Installed (Ready)" if is_installed else "Not Downloaded"
-        badge_fg = HeartTheme.PRIMARY_LIGHT if is_installed else "#F5F5F5"
-        badge_tc = HeartTheme.PRIMARY if is_installed else HeartTheme.TEXT_MUTED
+
+        if is_cloud:
+            badge_text = "☁️ Cloud Service (Online)"
+            badge_fg = "#E3F2FD"
+            badge_tc = "#1565C0"
+        elif is_installed:
+            inst_mb = status.get("installed_size_mb", 0)
+            badge_text = f"✓ Installed ({inst_mb} MB)"
+            badge_fg = HeartTheme.PRIMARY_LIGHT
+            badge_tc = HeartTheme.PRIMARY
+        else:
+            exp_mb = status.get("expected_size_mb", 0)
+            badge_text = f"⬇ Not Downloaded (~{exp_mb} MB)"
+            badge_fg = "#FFF8E7"
+            badge_tc = "#8C5C00"
 
         badge = ctk.CTkLabel(
             header_row,
@@ -179,9 +192,9 @@ class ComponentsManagerModal(ctk.CTkToplevel):
         else:
             cloud_lbl = ctk.CTkLabel(
                 ctrl_row,
-                text="Cloud service (0 MB storage, requires internet connection)",
+                text="☁️ Online Cloud Service · 0 MB local storage · Requires internet connection (Edge TTS)",
                 font=HeartTheme.FONT_TINY,
-                text_color=HeartTheme.TEXT_MUTED
+                text_color="#1565C0"
             )
             cloud_lbl.pack(side="left")
 
