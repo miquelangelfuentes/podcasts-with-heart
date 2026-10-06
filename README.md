@@ -75,7 +75,23 @@ python app.py
 
 ---
 
+## 💾 Standalone Windows Application (No Python Required)
+
+Pre-built standalone zip packages for Windows are provided in the GitHub Releases:
+- 👉 **[Download Podcasts with Heart v1.0.0 for Windows](https://github.com/miquelangelfuentes/podcasts-with-heart/releases/latest)**
+
+1. Download and extract `PodcastsWithHeart-v1.0.0-Windows.zip`.
+2. Run `PodcastsWithHeart.exe`.
+3. Enjoy 100% offline private speech synthesis with zero installation.
+
+---
+
 ## 📜 License & Credits
 
-- Built with CustomTkinter, Piper TTS, and Edge-TTS.
-- Open-source under GNU AGPL v3.
+- **Code License**: Open-source under [GNU AGPL v3](https://www.gnu.org/licenses/agpl-3.0.en.html).
+- **Contents & Documentation**: [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- **Created through vibe coding** with Google Antigravity by **Miquel Àngel Fuentes**.
+- **Voice Models & Engines**:
+  - [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) (Hexgrad & thewh1teagle Kokoro ONNX)
+  - [Rhasspy Piper](https://github.com/rhasspy/piper)
+  - [Microsoft Edge TTS](https://github.com/rany2/edge-tts)
