@@ -1683,50 +1683,53 @@ class MainWindow(ctk.CTk):
                 self._set_status("Could not load audio from selected file.")
                 return
 
-            max_samples = int(10.0 * 22050)
-            chunk = np.copy(audio[:, :min(audio.shape[1], max_samples)])
-
-            fade_samples = min(int(0.03 * 22050), chunk.shape[1] // 4)
-            if fade_samples > 0:
-                curve_in = np.linspace(0.0, 1.0, fade_samples, dtype=np.float32)
-                curve_out = np.linspace(1.0, 0.0, fade_samples, dtype=np.float32)
-                chunk[:, :fade_samples] *= curve_in
-                chunk[:, -fade_samples:] *= curve_out
-
+            # Play full audio file without artificial 10s cutoff
             vol = max(0.0, min(1.0, float(self.bg_music_volume)))
-
-            tmp_dir = os.path.join(tempfile.gettempdir(), "podcasts_heart_preview")
-            os.makedirs(tmp_dir, exist_ok=True)
-            self._bg_preview_tmp_wav = os.path.join(tmp_dir, f"bg_preview_{os.getpid()}.wav")
-            sf.write(self._bg_preview_tmp_wav, chunk.T, 22050, subtype="PCM_16")
-
             self._is_bg_previewing = True
             played = False
 
-            # Prioritize Pygame mixer for live dynamic volume
+            # Prioritize Pygame mixer directly with original audio file for optimal memory and full playback
             try:
                 import pygame
                 if not pygame.mixer.get_init():
-                    pygame.mixer.init(frequency=22050, size=-16, channels=chunk.shape[0], buffer=1024)
-                pygame.mixer.music.load(self._bg_preview_tmp_wav)
+                    pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=1024)
+                pygame.mixer.music.load(self.bg_music_path)
                 pygame.mixer.music.set_volume(vol)
                 pygame.mixer.music.play(-1 if self.bg_music_loop else 0)
                 played = True
             except Exception as pe:
-                print(f"Pygame preview warning: {pe}")
+                print(f"Pygame direct preview fallback to WAV: {pe}")
 
-            if not played and sys.platform == "win32":
+            if not played:
+                # Fallback: export full audio array to temporary WAV
+                tmp_dir = os.path.join(tempfile.gettempdir(), "podcasts_heart_preview")
+                os.makedirs(tmp_dir, exist_ok=True)
+                self._bg_preview_tmp_wav = os.path.join(tmp_dir, f"bg_preview_{os.getpid()}.wav")
+                sf.write(self._bg_preview_tmp_wav, audio.T, 22050, subtype="PCM_16")
+
                 try:
-                    scaled = np.clip(chunk * vol, -1.0, 1.0)
-                    sf.write(self._bg_preview_tmp_wav, scaled.T, 22050, subtype="PCM_16")
-                    import winsound
-                    flags = winsound.SND_FILENAME | winsound.SND_ASYNC
-                    if self.bg_music_loop:
-                        flags |= winsound.SND_LOOP
-                    winsound.PlaySound(self._bg_preview_tmp_wav, flags)
+                    import pygame
+                    if not pygame.mixer.get_init():
+                        pygame.mixer.init(frequency=22050, size=-16, channels=audio.shape[0], buffer=1024)
+                    pygame.mixer.music.load(self._bg_preview_tmp_wav)
+                    pygame.mixer.music.set_volume(vol)
+                    pygame.mixer.music.play(-1 if self.bg_music_loop else 0)
                     played = True
-                except Exception as we:
-                    print(f"Winsound warning: {we}")
+                except Exception:
+                    pass
+
+                if not played and sys.platform == "win32":
+                    try:
+                        scaled = np.clip(audio * vol, -1.0, 1.0)
+                        sf.write(self._bg_preview_tmp_wav, scaled.T, 22050, subtype="PCM_16")
+                        import winsound
+                        flags = winsound.SND_FILENAME | winsound.SND_ASYNC
+                        if self.bg_music_loop:
+                            flags |= winsound.SND_LOOP
+                        winsound.PlaySound(self._bg_preview_tmp_wav, flags)
+                        played = True
+                    except Exception as we:
+                        print(f"Winsound warning: {we}")
 
             if played:
                 self.btn_bg_preview.configure(
@@ -1734,8 +1737,8 @@ class MainWindow(ctk.CTk):
                     fg_color=HeartTheme.PRIMARY,
                     text_color="#FFFFFF"
                 )
-                dur_secs = chunk.shape[1] / 22050.0
-                loop_text = "in loop" if self.bg_music_loop else f"{dur_secs:.1f}s"
+                dur_secs = audio.shape[1] / 22050.0
+                loop_text = "in continuous loop" if self.bg_music_loop else f"{dur_secs:.1f}s"
                 self._set_status(f"Playing background music preview ({loop_text}, volume {int(round(vol*100))}%)...")
 
                 if not self.bg_music_loop:
