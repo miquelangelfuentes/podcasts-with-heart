@@ -259,24 +259,100 @@ class ScriptParser:
                         raw_line="[AUTO_TURN_PAUSE]"
                     ))
 
-                script.segments.append(PodcastSegment(
-                    segment_type="dialogue",
-                    speaker=spk_name,
-                    text=speech_text,
-                    pan=spk_cfg.pan,
-                    speed=spk_cfg.speed,
-                    pitch=spk_cfg.pitch,
-                    voice_id=spk_cfg.voice_id,
-                    raw_line=raw_line
-                ))
+                # Split inline pauses ([PAUSE: ...], [PAUSA: ...], <break time="..."/>) into dedicated pause segments
+                inline_pause_regex = re.compile(r'(\[(?:PAUSE|PAUSA)\s*:\s*[^\]]+\]|<break\s+[^>]*/>)', re.IGNORECASE)
+                parts = inline_pause_regex.split(speech_text)
+
+                for part in parts:
+                    if not part:
+                        continue
+                    # Check if part is a bracket pause tag [PAUSE: 300ms]
+                    bracket_match = re.match(r'^\[(?:PAUSE|PAUSA)\s*:\s*([^\]]+)\]$', part.strip(), re.IGNORECASE)
+                    if bracket_match:
+                        dur_ms = self.parse_time_ms(bracket_match.group(1))
+                        script.segments.append(PodcastSegment(
+                            segment_type="pause",
+                            pause_ms=dur_ms,
+                            raw_line=part
+                        ))
+                        continue
+
+                    # Check if part is an SSML break tag <break time="300ms"/>
+                    break_match = re.match(r'^<break\s+time=["\']([0-9.]+)(ms|s)["\']\s*/?>$', part.strip(), re.IGNORECASE)
+                    if break_match:
+                        val = float(break_match.group(1))
+                        unit = break_match.group(2).lower()
+                        dur_ms = int(val if unit == "ms" else val * 1000)
+                        script.segments.append(PodcastSegment(
+                            segment_type="pause",
+                            pause_ms=dur_ms,
+                            raw_line=part
+                        ))
+                        continue
+
+                    # Regular dialogue text
+                    clean_text = part.strip()
+                    if clean_text:
+                        script.segments.append(PodcastSegment(
+                            segment_type="dialogue",
+                            speaker=spk_name,
+                            text=clean_text,
+                            pan=spk_cfg.pan,
+                            speed=spk_cfg.speed,
+                            pitch=spk_cfg.pitch,
+                            voice_id=spk_cfg.voice_id,
+                            raw_line=raw_line
+                        ))
 
                 last_speaker = spk_name
             else:
                 # Continuation line for the current speaker
-                if mode == "DIALOGUE" and last_speaker and script.segments:
-                    last_seg = script.segments[-1]
-                    if last_seg.segment_type == "dialogue":
-                        last_seg.text += " " + line
-                        last_seg.raw_line += "\n" + raw_line
+                if mode == "DIALOGUE" and last_speaker:
+                    spk_cfg = script.speakers.get(last_speaker)
+                    inline_pause_regex = re.compile(r'(\[(?:PAUSE|PAUSA)\s*:\s*[^\]]+\]|<break\s+[^>]*/>)', re.IGNORECASE)
+                    parts = inline_pause_regex.split(line)
+
+                    for part in parts:
+                        if not part:
+                            continue
+                        bracket_match = re.match(r'^\[(?:PAUSE|PAUSA)\s*:\s*([^\]]+)\]$', part.strip(), re.IGNORECASE)
+                        if bracket_match:
+                            dur_ms = self.parse_time_ms(bracket_match.group(1))
+                            script.segments.append(PodcastSegment(
+                                segment_type="pause",
+                                pause_ms=dur_ms,
+                                raw_line=part
+                            ))
+                            continue
+
+                        break_match = re.match(r'^<break\s+time=["\']([0-9.]+)(ms|s)["\']\s*/?>$', part.strip(), re.IGNORECASE)
+                        if break_match:
+                            val = float(break_match.group(1))
+                            unit = break_match.group(2).lower()
+                            dur_ms = int(val if unit == "ms" else val * 1000)
+                            script.segments.append(PodcastSegment(
+                                segment_type="pause",
+                                pause_ms=dur_ms,
+                                raw_line=part
+                            ))
+                            continue
+
+                        clean_text = part.strip()
+                        if clean_text:
+                            # If the last segment is dialogue from the same speaker, append to it
+                            if script.segments and script.segments[-1].segment_type == "dialogue" and script.segments[-1].speaker == last_speaker:
+                                script.segments[-1].text += " " + clean_text
+                                script.segments[-1].raw_line += "\n" + raw_line
+                            else:
+                                script.segments.append(PodcastSegment(
+                                    segment_type="dialogue",
+                                    speaker=last_speaker,
+                                    text=clean_text,
+                                    pan=spk_cfg.pan if spk_cfg else 0.0,
+                                    speed=spk_cfg.speed if spk_cfg else 1.0,
+                                    pitch=spk_cfg.pitch if spk_cfg else 0.0,
+                                    voice_id=spk_cfg.voice_id if spk_cfg else "af_heart",
+                                    raw_line=raw_line
+                                ))
 
         return script
