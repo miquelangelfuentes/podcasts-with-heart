@@ -17,6 +17,10 @@ Free code signing provided by [SignPath.io](https://signpath.io/), certificate b
 - **Approver**: [Miquel Àngel Fuentes](https://github.com/miquelangelfuentes)
 - **Privacy policy**: [PRIVACY.md](PRIVACY.md)
 
+Only Windows release artifacts built from this repository by the official GitHub Actions workflow are submitted for signing.
+
+Every signing request must be manually approved by the project approver before a signed artifact is published.
+
 > [!NOTE]
 > The current published Windows release predates SignPath approval and should not be interpreted as SignPath-signed. Once the project is approved, release binaries will be signed through the documented SignPath workflow.
 
