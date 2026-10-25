@@ -4,11 +4,21 @@
 
 # ❤️ Podcasts with Heart
 
-> [!NOTE]
-> **Code Signing & Security**: Free code signing provided by [SignPath Foundation](https://signpath.org) to ensure binary authenticity and security for Windows users.
-
 > **Autonomous desktop podcast studio for Windows and Linux to craft 1, 2, or 3-voice educational podcasts in English, with 100% offline privacy and no duration limits.**  
 > Designed for classrooms, language academies, educators, and content creators.
+
+---
+
+## Code signing policy
+
+Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).
+
+- **Committer and reviewer**: [Miquel Àngel Fuentes](https://github.com/miquelangelfuentes)
+- **Approver**: [Miquel Àngel Fuentes](https://github.com/miquelangelfuentes)
+- **Privacy policy**: [PRIVACY.md](PRIVACY.md)
+
+> [!NOTE]
+> The current published Windows release predates SignPath approval and should not be interpreted as SignPath-signed. Once the project is approved, release binaries will be signed through the documented SignPath workflow.
 
 ---
 
