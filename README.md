@@ -4,6 +4,9 @@
 
 # ❤️ Podcasts with Heart
 
+> [!NOTE]
+> **Code Signing & Security**: Free code signing provided by [SignPath Foundation](https://signpath.org) to ensure binary authenticity and security for Windows users.
+
 > **Autonomous desktop podcast studio for Windows and Linux to craft 1, 2, or 3-voice educational podcasts in English, with 100% offline privacy and no duration limits.**  
 > Designed for classrooms, language academies, educators, and content creators.
 
@@ -174,4 +177,3 @@ The author has personally conducted the following **rigorous human validations**
 ---
 
 [Evaluación VCER de la versión 1.0: Recomendable (100 %), octubre de 2026](https://vibe-coding-educativo.github.io/vibe-responsable/vcer/?r=recomendable&p=100&f=2026-10&v=1.0&t=Podcasts%20with%20Heart&u=https%3A%2F%2Fgithub.com%2Fmiquelangelfuentes%2Fpodcasts-with-heart)
-
