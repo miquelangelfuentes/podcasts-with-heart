@@ -11,7 +11,7 @@ import subprocess
 import tarfile
 import time
 
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 
 
 def build_linux():
