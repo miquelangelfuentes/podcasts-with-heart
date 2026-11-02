@@ -10,7 +10,7 @@ import subprocess
 import time
 import zipfile
 
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 
 def build():
     print("=" * 60)
