@@ -28,14 +28,17 @@ Every signing request must be manually approved by the project approver before a
 
 ## 📥 Direct Downloads (No Python Required)
 
-Pre-built standalone packages are provided directly in the official GitHub Releases:
+Pre-built standalone packages are provided through the official GitHub Releases page.
 
 ### 🪟 Windows (.exe)
-1. Download the standalone Windows release:  
-   👉 **[Download Podcasts with Heart v1.0.0 for Windows (.zip)](https://github.com/miquelangelfuentes/podcasts-with-heart/releases/download/v1.0.0/PodcastsWithHeart-v1.0.0-Windows.zip)** (~771 MB)
+1. Open the **latest published release** and download the Windows ZIP package:  
+   👉 **[Open the latest release and downloads](https://github.com/miquelangelfuentes/podcasts-with-heart/releases/latest)**
 2. Extract the ZIP file to any folder on your computer.
 3. Run `PodcastsWithHeart.exe`.
 4. Click **`📦 Models`** in the top bar to inspect installed models or download additional Piper voices in a single click.
+
+> [!NOTE]
+> The *Releases* page always shows the latest published version and its available files. The version number on `main` may be higher while a new release is being prepared.
 
 ### 🐧 Linux (Ubuntu, Debian, Fedora, Arch, Linux Mint)
 1. Install system prerequisites (audio libraries and eSpeak):
@@ -64,7 +67,7 @@ Pre-built standalone packages are provided directly in the official GitHub Relea
    ```bash
    python3 build_linux.py
    ```
-   *Generates `dist/PodcastsWithHeart-v1.0.0-Linux-x86_64.tar.gz` with zero external runtime dependencies.*
+   *The generated archive includes the current application version in its filename.*
 
 ---
 
