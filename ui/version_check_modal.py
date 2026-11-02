@@ -19,7 +19,7 @@ from typing import Optional, Dict, Any
 from ui.theme import HeartTheme
 from ui.components import CleanButton
 
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.0.1"
 GITHUB_OWNER = "miquelangelfuentes"
 GITHUB_REPO = "podcasts-with-heart"
 
