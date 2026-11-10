@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   release:
     types: [published]
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-windows.yml'
 
 permissions:
   contents: write
@@ -81,3 +85,39 @@ jobs:
           files: dist/PodcastsWithHeart-*-Windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+      # One-time v1.0.1 publication: this workflow file's push triggers a full
+      # tested build, and the release is published only if all steps succeed.
+      - name: Publish v1.0.1 release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $archive = "dist/PodcastsWithHeart-v1.0.1-Windows.zip"
+          if (-not (Test-Path $archive)) {
+              throw "Expected Windows release archive is missing: $archive"
+          }
+          @'
+          ## Podcasts with Heart v1.0.1
+
+          This update introduces improved voice pacing controls, automatic background-music ducking, corrected pause handling, enhanced model management, and expanded educator documentation.
+
+          ### Windows download
+          Download `PodcastsWithHeart-v1.0.1-Windows.zip`, extract the archive, and launch `PodcastsWithHeart.exe`.
+
+          The package includes offline Kokoro and Piper voice models. Microsoft neural voices require an internet connection.
+
+          ### Code signing
+          This release is not SignPath-signed. See the repository's code-signing policy for more information.
+          '@ | Set-Content -Path RELEASE_NOTES_v1.0.1.md -Encoding utf8
+          gh release view v1.0.1 --repo "${{ github.repository }}" *> $null
+          if ($LASTEXITCODE -eq 0) {
+              gh release upload v1.0.1 $archive --clobber --repo "${{ github.repository }}"
+          } else {
+              gh release create v1.0.1 $archive --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "Podcasts with Heart v1.0.1" --notes-file RELEASE_NOTES_v1.0.1.md --latest
+          }
+          if ($LASTEXITCODE -ne 0) {
+              throw "GitHub release creation/upload failed."
+          }
