@@ -8,6 +8,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -26,6 +29,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pyinstaller
+
+      - name: Download bundled offline TTS models
+        shell: pwsh
+        run: |
+          @'
+          from core.model_downloader import ModelDownloader
+
+          downloader = ModelDownloader()
+          for model in ("kokoro_heart", "piper_lessac", "piper_amy", "piper_ryan", "piper_alan"):
+              if not downloader.is_model_downloaded(model):
+                  if not downloader.download_model(model):
+                      raise SystemExit(f"Unable to download {model}: {downloader.last_error}")
+              print(f"Verified {model}")
+          '@ | python -
 
       - name: Run automated test suite
         run: |
