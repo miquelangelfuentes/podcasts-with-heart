@@ -3,10 +3,6 @@ name: Build for Windows (CI/CD)
 on:
   workflow_dispatch:
   pull_request:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-windows.yml'
   release:
     types: [published]
 
@@ -132,24 +128,3 @@ jobs:
           files: dist/PodcastsWithHeart-*-Windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      # One-time publication after tests, models and the Windows ZIP succeed.
-      - name: Publish Podcasts with Heart v1.0.2
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $archive = "dist/PodcastsWithHeart-v1.0.2-Windows.zip"
-          if (-not (Test-Path $archive)) {
-              throw "Missing Windows ZIP for v1.0.2."
-          }
-          gh release view v1.0.2 --repo "${{ github.repository }}" *> $null
-          if ($LASTEXITCODE -eq 0) {
-              gh release upload v1.0.2 $archive --clobber --repo "${{ github.repository }}"
-          } else {
-              gh release create v1.0.2 $archive --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "Podcasts with Heart v1.0.2" --notes-file docs/RELEASE_NOTES_v1.0.2.md --latest
-          }
-          if ($LASTEXITCODE -ne 0) {
-              throw "Could not publish release v1.0.2."
-          }
