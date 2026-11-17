@@ -20,7 +20,7 @@ class ReleaseUpdaterTests(unittest.TestCase):
         self.assertTrue(is_newer_release("1.1.9", "v1.1.10"))
         self.assertFalse(is_newer_release("1.0.2", "v1.0.2"))
         self.assertFalse(is_newer_release("1.0.2", "v1.0.1"))
-        self.assertEqual(parse_version("v1.0.2"), (1, 1, 4))
+        self.assertEqual(parse_version("v1.0.2"), (1, 0, 2))
         with self.assertRaises(ValueError):
             parse_version("a-random-commit-hash")
 
@@ -91,7 +91,9 @@ class ReleaseUpdaterTests(unittest.TestCase):
         self.assertIn("if ($copyCode -ge 8)", script)
         self.assertIn("Get-FileHash", script)
         self.assertIn("Start-Process -FilePath $TargetExe", script)
-        self.assertNotIn(" /XO ", script)
+        # The main application copy must not skip newer files.
+        main_copy = next(line for line in script.splitlines() if "/IS /IT" in line and "robocopy.exe" in line)
+        self.assertNotIn(" /XO ", main_copy)
         self.assertNotIn("timeout /t 2", script)
 
     def test_powershell_quoting(self):
