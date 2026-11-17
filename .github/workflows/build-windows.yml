@@ -2,6 +2,11 @@ name: Build for Windows (CI/CD)
 
 on:
   workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-windows.yml'
   release:
     types: [published]
 
@@ -44,10 +49,56 @@ jobs:
       - name: Run automated test suite
         run: |
           python test_features.py
+          python -m unittest -v test_updater.py
+
+      - name: Check PowerShell update helper syntax
+        shell: pwsh
+        run: |
+          @'
+          import os
+          from core.update_manager import make_windows_update_script
+          root = os.getcwd()
+          target = os.path.join(root, "dist", "PodcastsWithHeart")
+          source = os.path.join(root, "updater_source")
+          os.makedirs(target, exist_ok=True)
+          script = make_windows_update_script(
+              source, target, os.path.join(target, "PodcastsWithHeart.exe"),
+              123456, "v1.0.2", source,
+          )
+          with open("validate-updater.ps1", "w", encoding="utf-8-sig") as file:
+              file.write(script)
+          '@ | python -
+          $tokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "validate-updater.ps1").Path, [ref]$tokens, [ref]$parseErrors
+          ) | Out-Null
+          if ($parseErrors.Count -gt 0) {
+              $parseErrors | ForEach-Object { Write-Host $_ }
+              throw "Windows updater PowerShell script has syntax errors."
+          }
 
       - name: Build standalone Windows executable (.exe)
         run: |
           python build_exe.py
+
+      - name: Validate Windows ZIP version and executable
+        shell: pwsh
+        run: |
+          $archivePath = "dist/PodcastsWithHeart-v1.0.2-Windows.zip"
+          if (-not (Test-Path $archivePath)) {
+              throw "Missing Windows ZIP for v1.0.2."
+          }
+          Add-Type -AssemblyName System.IO.Compression
+          $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $archivePath).Path)
+          try {
+              $names = @($archive.Entries | ForEach-Object { $_.FullName })
+              if (-not ($names -contains "PodcastsWithHeart/PodcastsWithHeart.exe")) {
+                  throw "Windows executable is missing from the ZIP."
+              }
+          } finally {
+              $archive.Dispose()
+          }
 
       - name: Upload artifact to GitHub Actions
         id: upload-artifact
@@ -81,3 +132,24 @@ jobs:
           files: dist/PodcastsWithHeart-*-Windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      # One-time publication after tests, models and the Windows ZIP succeed.
+      - name: Publish Podcasts with Heart v1.0.2
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $archive = "dist/PodcastsWithHeart-v1.0.2-Windows.zip"
+          if (-not (Test-Path $archive)) {
+              throw "Missing Windows ZIP for v1.0.2."
+          }
+          gh release view v1.0.2 --repo "${{ github.repository }}" *> $null
+          if ($LASTEXITCODE -eq 0) {
+              gh release upload v1.0.2 $archive --clobber --repo "${{ github.repository }}"
+          } else {
+              gh release create v1.0.2 $archive --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "Podcasts with Heart v1.0.2" --notes-file docs/RELEASE_NOTES_v1.0.2.md --latest
+          }
+          if ($LASTEXITCODE -ne 0) {
+              throw "Could not publish release v1.0.2."
+          }

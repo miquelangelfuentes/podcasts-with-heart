@@ -33,6 +33,8 @@ Pre-built standalone packages are provided through the official GitHub Releases 
 ### 🪟 Windows (.exe)
 1. Open the **latest published release** and download the Windows ZIP package:  
    👉 **[Open the latest release and downloads](https://github.com/miquelangelfuentes/podcasts-with-heart/releases/latest)**
+
+> **Updating:** From v1.0.2 onward, **Check Version** displays a one-click **Update application** button when a newer Windows release is published. The updater downloads that exact release, verifies its archive, waits for the running application to exit, preserves existing voice models, and restarts the updated executable. Existing v1.0.1 installations have no updater and need a one-time manual install of v1.0.2 from the link above. Back up your models before replacing an older installation.
 2. Extract the ZIP file to any folder on your computer.
 3. Run `PodcastsWithHeart.exe`.
 4. Click **`📦 Models`** in the top bar to inspect installed models or download additional Piper voices in a single click.
